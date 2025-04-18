@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign Up | GrabNGo</title>
+    <link rel="stylesheet" href="css/login.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/staff.css" />
+    <link rel="stylesheet" href="css/menu.css" />
+    <link rel="stylesheet" href="css/auth.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      />
+  </head>
+  <body class="vintage-auth">
+    <div class="auth-container">
+      <div class="auth-left">
+        <div class="vintage-overlay"></div>
+        <div class="auth-left-content">
+          <h1>Join Us</h1>
+          <p>
+            Create an account to start enjoying seamless food ordering from your
+            university canteen.
+          </p>
+          <div class="auth-decoration">
+            <div class="decoration-line"></div>
+            <i class="fas fa-user-plus"></i>
+            <div class="decoration-line"></div>
+          </div>
+          <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+      </div>
+      <div class="auth-right">
+        <div class="auth-form-container">
+          <div class="auth-header">
+            <h2>Create Your Account</h2>
+            <p>Fill in your details to get started</p>
+          </div>
+
+          <form id="signupForm" class="auth-form">
+            <div class="form-group">
+              <label for="signupUserType">I am a:</label>
+              <select id="signupUserType" class="vintage-select">
+                <option value="user">Student/User</option>
+                <option value="staff">Canteen Staff</option>
+              </select>
+            </div>
+
+            <div id="userFields">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-user"></i>
+                  <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your full name"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-envelope"></i>
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="userMobile">Mobile Number</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-phone"></i>
+                  <input
+                    type="tel"
+                    id="userMobile"
+                    placeholder="Enter your mobile number"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="userPassword">Password</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    type="password"
+                    id="userPassword"
+                    placeholder="Create a password"
+                    required
+                  />
+                </div>
+                <div class="password-hint">
+                  <p>Password must be at least 8 characters long</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div id="staffFields" style="display: none">
+              <div class="form-group">
+                <label for="staffName">Full Name</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-user"></i>
+                  <input
+                    type="text"
+                    id="staffName"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="staffMobile">Mobile Number</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-phone"></i>
+                  <input
+                    type="tel"
+                    id="staffMobile"
+                    placeholder="Enter your mobile number"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="staffPassword">Password</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    type="password"
+                    id="staffPassword"
+                    placeholder="Create a password"
+                  />
+                </div>
+                <div class="password-hint">
+                  <p>Password must be at least 8 characters long</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="staffConfirmPassword">Confirm Password</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    type="password"
+                    id="staffConfirmPassword"
+                    placeholder="Confirm your password"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="staffCode">Staff Verification Code</label>
+                <div class="input-with-icon">
+                  <i class="fas fa-key"></i>
+                  <input
+                    type="text"
+                    id="staffCode"
+                    placeholder="Enter staff verification code"
+                  />
+                </div>
+                <div class="password-hint">
+                  <p>Provided by canteen administration</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group terms">
+              <input type="checkbox" id="agreeTerms" required />
+              <label for="agreeTerms"
+                >I agree to the <a href="#">Terms of Service</a> and
+                <a href="#">Privacy Policy</a></label
+              >
+            </div>
+
+            <button type="submit" class="btn vintage-btn">
+              Create Account
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+  </body>
+</html>

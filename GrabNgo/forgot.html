@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password | GrabNGo</title>
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/login.css" />
+    <link rel="stylesheet" href="css/staff.css" />
+    <link rel="stylesheet" href="css/menu.css" />
+    <link rel="stylesheet" href="css/auth.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="vintage-auth">
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="vintage-overlay"></div>
+            <div class="auth-left-content">
+                <h1>Reset Password</h1>
+                <p>Enter your details to recover your account</p>
+                <div class="auth-decoration">
+                    <div class="decoration-line"></div>
+                    <i class="fas fa-key"></i>
+                    <div class="decoration-line"></div>
+                </div>
+                <p>Remember your password? <a href="login.html">Login here</a></p>
+            </div>
+        </div>
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <div class="auth-header">
+                    <h2>Password Recovery</h2>
+                    <p>We'll help you reset your password</p>
+                </div>
+                
+                <form id="forgotForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="recoveryUserType">I am a:</label>
+                        <select id="recoveryUserType" class="vintage-select">
+                            <option value="user">Student/User</option>
+                            <option value="staff">Canteen Staff</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="recoveryMobile">Mobile Number</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-phone"></i>
+                            <input type="tel" id="recoveryMobile" placeholder="Enter your registered mobile number" required>
+                        </div>
+                    </div>
+                    
+                    <div id="userRecovery">
+                        <div class="form-group">
+                            <label for="recoveryEmail">Email Address</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="recoveryEmail" placeholder="Enter your registered email" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn vintage-btn">Reset Password</button>
+                    
+                    <div class="recovery-message">
+                        <p>We'll send a password reset link to your registered email/mobile.</p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

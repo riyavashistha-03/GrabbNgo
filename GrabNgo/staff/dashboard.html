@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard | GrabNGo</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="staff-dashboard">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>GrabNGo</h2>
+                <p>Staff Dashboard</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="add-dish.html">
+                            <i class="fas fa-utensils"></i>
+                            <span>Manage Menu</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="orders.html">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Orders</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="reports.html">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="../index.html" class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <h1>Dashboard</h1>
+                    <p>Welcome back, <span id="staffName">Admin</span></p>
+                </div>
+                <div class="header-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../images/staff-avatar.jpg" alt="Staff Avatar">
+                    </div>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <!-- Quick Actions Section -->
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <a href="add-dish.html" class="btn btn-action">
+                            <i class="fas fa-plus"></i> Add New Dish
+                        </a>
+                        <button class="btn btn-action" id="quickAddDish">
+                            <i class="fas fa-bolt"></i> Quick Add Dish
+                        </button>
+                        <a href="orders.html" class="btn btn-action">
+                            <i class="fas fa-eye"></i> View Recent Orders
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Menu Items</h3>
+                            <p id="menuItemsCount">24</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Today's Orders</h3>
+                            <p id="todayOrders">56</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Active Users</h3>
+                            <p id="activeUsers">142</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Today's Revenue</h3>
+                            <p id="todayRevenue">$1,245</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Orders Table -->
+                <div class="recent-orders">
+                    <div class="section-header">
+                        <h2>Recent Orders</h2>
+                        <a href="orders.html" class="btn btn-view-all">View All</a>
+                    </div>
+                    
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#ORD-001</td>
+                                <td>John Doe</td>
+                                <td>2</td>
+                                <td>$12.50</td>
+                                <td><span class="status preparing">Preparing</span></td>
+                                <td><button class="btn btn-action">Update</button></td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-002</td>
+                                <td>Jane Smith</td>
+                                <td>3</td>
+                                <td>$18.75</td>
+                                <td><span class="status ready">Ready</span></td>
+                                <td><button class="btn btn-action">Update</button></td>
+                            </tr>
+                            <tr>
+                                <td>#ORD-003</td>
+                                <td>Robert Johnson</td>
+                                <td>1</td>
+                                <td>$8.50</td>
+                                <td><span class="status completed">Completed</span></td>
+                                <td><button class="btn btn-action">Update</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Popular Dishes Section -->
+                <div class="popular-dishes">
+                    <div class="section-header">
+                        <h2>Popular Dishes</h2>
+                        <a href="add-dish.html" class="btn btn-view-all">Manage Menu</a>
+                    </div>
+                    
+                    <div class="dishes-grid">
+                        <div class="dish-card">
+                            <div class="dish-image">
+                                <img src="../images/dish1.jpg" alt="Cheese Burger">
+                                <div class="popular-badge">Top Seller</div>
+                            </div>
+                            <div class="dish-info">
+                                <h3>Cheese Burger</h3>
+                                <p class="dish-sales">42 orders this week</p>
+                                <div class="dish-meta">
+                                    <span class="price">$8.99</span>
+                                    <span class="rating"><i class="fas fa-star"></i> 4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dish-card">
+                            <div class="dish-image">
+                                <img src="../images/dish2.jpg" alt="Margherita Pizza">
+                                <div class="popular-badge">Trending</div>
+                            </div>
+                            <div class="dish-info">
+                                <h3>Margherita Pizza</h3>
+                                <p class="dish-sales">35 orders this week</p>
+                                <div class="dish-meta">
+                                    <span class="price">$12.50</span>
+                                    <span class="rating"><i class="fas fa-star"></i> 4.6</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dish-card">
+                            <div class="dish-image">
+                                <img src="../images/dish3.jpg" alt="Grilled Salmon">
+                            </div>
+                            <div class="dish-info">
+                                <h3>Grilled Salmon</h3>
+                                <p class="dish-sales">28 orders this week</p>
+                                <div class="dish-meta">
+                                    <span class="price">$12.99</span>
+                                    <span class="rating"><i class="fas fa-star"></i> 4.9</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Quick Add Dish Modal -->
+    <div class="modal" id="quickAddModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Quick Add Dish</h3>
+                <button class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="quickAddForm">
+                    <div class="form-group">
+                        <label for="quickDishName">Dish Name *</label>
+                        <input type="text" id="quickDishName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickDishPrice">Price ($) *</label>
+                        <input type="number" id="quickDishPrice" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickDishCategory">Category *</label>
+                        <select id="quickDishCategory" required>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="snacks">Snacks</option>
+                            <option value="beverages">Beverages</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="quickDishImage">Image</label>
+                        <input type="file" id="quickDishImage" accept="image/*">
+                        <div class="image-preview-small" id="quickImagePreview">
+                            <img id="quickPreviewImage" src="" alt="Preview">
+                            <span>No image selected</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Add Dish</button>
+                        <button type="button" class="btn btn-secondary btn-cancel">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/staff.js"></script>
+</body>
+</html>
