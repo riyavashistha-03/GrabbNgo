@@ -10,6 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update stats from backend API
     updateDashboardStats();
     
+    // Fetch and render recent orders dynamically
+    fetchAndRenderRecentOrders();
+    
+    // Fetch and render popular dishes dynamically
+    fetchAndRenderPopularDishes();
+    
     // Setup quick add dish modal
     setupQuickAddDish();
     
@@ -18,11 +24,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize other components
     initializeComponents();
+    
+    // Fetch and render current menu items on add-dish page
+    fetchAndRenderMenuItems();
 });
 
 async function updateDashboardStats() {
     try {
-        const response = await fetch('https://your-backend-api.com/api/staff/stats', {
+        const response = await fetch('/api/staff/stats', {
             headers: {
                 'Authorization': 'Bearer ' + localStorage.getItem('authToken')
             }
@@ -34,133 +43,126 @@ async function updateDashboardStats() {
         document.getElementById('menuItemsCount').textContent = stats.menuItems;
         document.getElementById('todayOrders').textContent = stats.todayOrders;
         document.getElementById('activeUsers').textContent = stats.activeUsers;
-        document.getElementById('todayRevenue').textContent = `$${stats.todayRevenue.toLocaleString()}`;
+        document.getElementById('todayRevenue').textContent = formatCurrency(stats.todayRevenue);
     } catch (error) {
         console.error('Error fetching dashboard stats:', error);
     }
 }
 
-function initializeComponents() {
-    // Initialize tooltips
-    const tooltipElements = document.querySelectorAll('[data-tooltip]');
-    tooltipElements.forEach(element => {
-        element.addEventListener('mouseenter', showTooltip);
-        element.addEventListener('mouseleave', hideTooltip);
-    });
-    
-    // Initialize timeago
-    updateRelativeTimes();
+async function fetchAndRenderRecentOrders() {
+    try {
+        const response = await fetch('/api/staff/orders', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch recent orders');
+        }
+        const orders = await response.json();
+        const tbody = document.querySelector('.orders-table tbody');
+        tbody.innerHTML = '';
+        orders.forEach(order => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>#ORD-${order._id.slice(-6)}</td>
+                <td>${order.user ? order.user.name : 'Unknown'}</td>
+                <td>${order.items.length}</td>
+                <td>${formatCurrency(order.totalPrice)}</td>
+                <td><span class="status ${order.status.toLowerCase()}">${order.status}</span></td>
+                <td><button class="btn btn-action">Update</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+        setupOrderStatusButtons();
+    } catch (error) {
+        console.error('Error fetching recent orders:', error);
+    }
 }
 
-function setupQuickAddDish() {
-    const quickAddBtn = document.getElementById('quickAddDish');
-    const quickAddModal = document.getElementById('quickAddModal');
-    const closeBtn = document.querySelector('.btn-close');
-    const cancelBtn = document.querySelector('.btn-cancel');
-    const quickAddForm = document.getElementById('quickAddForm');
-    const quickDishImage = document.getElementById('quickDishImage');
-    const quickImagePreview = document.getElementById('quickPreviewImage');
-    
-    if (!quickAddBtn) return;
-    
-    // Open modal
-    quickAddBtn.addEventListener('click', function() {
-        quickAddModal.style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    });
-    
-    // Close modal
-    function closeModal() {
-        quickAddModal.style.display = 'none';
-        document.body.style.overflow = '';
+async function fetchAndRenderPopularDishes() {
+    try {
+        const response = await fetch('/api/staff/reports', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch reports');
+        }
+        const data = await response.json();
+        const dishesGrid = document.querySelector('.popular-dishes .dishes-grid');
+        if (!dishesGrid) return;
+        dishesGrid.innerHTML = '';
+        data.popularDishes.forEach(dish => {
+            const dishCard = document.createElement('div');
+            dishCard.className = 'dish-card';
+            dishCard.innerHTML = `
+                <div class="dish-image">
+                    <img src="../images/dish-placeholder.jpg" alt="${dish.name}">
+                </div>
+                <div class="dish-info">
+                    <h3>${dish.name}</h3>
+                    <p class="dish-sales">${dish.totalQuantity} orders this week</p>
+                </div>
+            `;
+            dishesGrid.appendChild(dishCard);
+        });
+    } catch (error) {
+        console.error('Error fetching popular dishes:', error);
     }
-    
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    
-    // Close when clicking outside
-    window.addEventListener('click', function(e) {
-        if (e.target === quickAddModal) {
-            closeModal();
-        }
-    });
-    
-    // Image preview
-    quickDishImage.addEventListener('change', function() {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                quickImagePreview.src = e.target.result;
-                quickImagePreview.style.display = 'block';
+}
+
+async function fetchAndRenderMenuItems() {
+    if (!document.querySelector('.menu-items-grid')) return;
+    try {
+        const response = await fetch('/api/dishes', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authToken')
             }
-            
-            reader.readAsDataURL(file);
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch menu items');
         }
-    });
-    
-    // Handle form submission
-    quickAddForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const dishName = document.getElementById('quickDishName').value;
-        const dishPrice = document.getElementById('quickDishPrice').value;
-        const dishCategory = document.getElementById('quickDishCategory').value;
-        const dishImage = document.getElementById('quickDishImage').files[0];
-        
-        if (!dishName || !dishPrice) {
-            showErrorMessage('Please fill in all required fields');
-            return;
-        }
-        
-        try {
-            const formData = new FormData();
-            formData.append('name', dishName);
-            formData.append('price', dishPrice);
-            formData.append('category', dishCategory);
-            if (dishImage) {
-                formData.append('image', dishImage);
-            }
-            
-            const response = await fetch('https://your-backend-api.com/api/dishes', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-                },
-                body: formData
-            });
-            
-            if (!response.ok) {
-                const errorData = await response.json();
-                showErrorMessage('Failed to add dish: ' + (errorData.message || 'Unknown error'));
-                return;
-            }
-            
-            showSuccessMessage(`${dishName} added successfully!`);
-            quickAddForm.reset();
-            quickImagePreview.src = '';
-            quickImagePreview.style.display = 'none';
-            closeModal();
-            updateMenuItemsCount();
-        } catch (error) {
-            showErrorMessage('Error adding dish: ' + error.message);
-        }
-    });
+        const dishes = await response.json();
+        const menuGrid = document.querySelector('.menu-items-grid');
+        menuGrid.innerHTML = '';
+        dishes.forEach(dish => {
+            const menuItem = document.createElement('div');
+            menuItem.className = 'menu-item';
+            menuItem.innerHTML = `
+                <div class="item-image">
+                    <img src="../images/dish-placeholder.jpg" alt="${dish.name}">
+                </div>
+                <div class="item-details">
+                    <h4>${dish.name}</h4>
+                    <p class="item-category">${dish.category}</p>
+                    <p class="item-price">${formatCurrency(dish.price)}</p>
+                    <div class="item-actions">
+                        <button class="btn btn-edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-delete"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+            menuGrid.appendChild(menuItem);
+        });
+    } catch (error) {
+        console.error('Error fetching menu items:', error);
+    }
 }
 
 function setupOrderStatusButtons() {
     document.querySelectorAll('.orders-table .btn-action').forEach(button => {
         button.addEventListener('click', async function() {
             const row = this.closest('tr');
-            const orderId = row.querySelector('td:first-child').textContent;
+            const orderId = row.querySelector('td:first-child').textContent.replace('#ORD-', '');
             const currentStatus = row.querySelector('.status').textContent;
             
             const newStatus = prompt(`Update status for order ${orderId} (Current: ${currentStatus})`, currentStatus);
             
             if (newStatus && newStatus !== currentStatus) {
                 try {
-                    const response = await fetch(`https://your-backend-api.com/api/orders/${orderId}/status`, {
+                    const response = await fetch(`/api/orders/${orderId}/status`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',

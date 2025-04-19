@@ -327,4 +327,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // In a real app, you would auto-fill the login form or auto-login
         console.log('Remember me is enabled');
     }
+
+    // Password toggle functionality for signup form
+    const passwordToggleButtons = document.querySelectorAll('.password-toggle');
+    passwordToggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                button.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        });
+    });
 });
