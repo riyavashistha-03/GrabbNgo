@@ -45,23 +45,28 @@ router.post('/signup/:userType', async (req, res) => {
 
 // Login route
 router.post('/login', async (req, res) => {
+    console.log('Login request body:', req.body);
     const { userType, mobile, password } = req.body;
 
     try {
         const user = await User.findOne({ mobile, userType });
         if (!user) {
+            console.log('User not found');
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
+            console.log('Password mismatch');
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
         const token = jwt.sign({ id: user._id, userType: user.userType }, JWT_SECRET, { expiresIn: '1d' });
 
+        console.log('Login successful for user:', user.mobile);
         res.json({ token, userType: user.userType, name: user.name });
     } catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
