@@ -79,17 +79,15 @@
                 <!-- Quick Actions Section -->
                 <div class="quick-actions">
                     <h3>Quick Actions</h3>
-                    <div class="action-buttons">
-                        <a href="add-dish.html" class="btn btn-action">
-                            <i class="fas fa-plus"></i> Add New Dish
-                        </a>
-                        <button class="btn btn-action" id="quickAddDish">
-                            <i class="fas fa-bolt"></i> Quick Add Dish
-                        </button>
-                        <a href="order.html" class="btn btn-action">
-                            <i class="fas fa-eye"></i> View Recent Orders
-                        </a>
-                    </div>
+                <div class="action-buttons">
+                    <a href="add-dish.html" class="btn btn-action">
+                        <i class="fas fa-plus"></i> Add New Dish
+                    </a>
+                    <!-- Removed Quick Add Dish button to avoid duplication -->
+                    <a href="order.html" class="btn btn-action">
+                        <i class="fas fa-eye"></i> View Recent Orders
+                    </a>
+                </div>
                 </div>
                 
                 <!-- Stats Grid -->
@@ -240,48 +238,7 @@
     </div>
 
     <!-- Quick Add Dish Modal -->
-    <div class="modal" id="quickAddModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Quick Add Dish</h3>
-                <button class="btn-close">&times;</button>
-            </div>
-            <div class="modal-body">
-                <form id="quickAddForm">
-                    <div class="form-group">
-                        <label for="quickDishName">Dish Name *</label>
-                        <input type="text" id="quickDishName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="quickDishPrice">Price ($) *</label>
-                        <input type="number" id="quickDishPrice" min="0" step="0.01" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="quickDishCategory">Category *</label>
-                        <select id="quickDishCategory" required>
-                            <option value="breakfast">Breakfast</option>
-                            <option value="lunch">Lunch</option>
-                            <option value="dinner">Dinner</option>
-                            <option value="snacks">Snacks</option>
-                            <option value="beverages">Beverages</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="quickDishImage">Image</label>
-                        <input type="file" id="quickDishImage" accept="image/*">
-                        <div class="image-preview-small" id="quickImagePreview">
-                            <img id="quickPreviewImage" src="" alt="Preview">
-                            <span>No image selected</span>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Add Dish</button>
-                        <button type="button" class="btn btn-secondary btn-cancel">Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Removed Quick Add Dish Modal to avoid duplication -->
 
     <script src="../js/staff.js"></script>
 </body>

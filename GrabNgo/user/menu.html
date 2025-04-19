@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Menu | GrabNGo</title>
-    <link rel="stylesheet" href="../css/menu.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/menu.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 <body class="user-menu">
     <header class="user-header">
@@ -18,8 +18,8 @@
                 <a href="#"><i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span></a>
                 <a href="#"><i class="fas fa-history"></i> Orders</a>
                 <div class="user-profile">
-                    <img src="../images/user-avatar.jpg" alt="User Avatar">
-                    <span>John Doe</span>
+                    <img src="../images/delicious_img.jpg" alt="User Avatar" />
+                    <span id="userName">User</span>
                     <div class="dropdown">
                         <a href="#"><i class="fas fa-user"></i> Profile</a>
                         <a href="#"><i class="fas fa-cog"></i> Settings</a>
@@ -33,10 +33,10 @@
     <main class="menu-container">
         <div class="menu-sidebar">
             <div class="search-box">
-                <input type="text" placeholder="Search dishes...">
+                <input type="text" placeholder="Search dishes..." />
                 <button><i class="fas fa-search"></i></button>
             </div>
-            
+
             <div class="categories">
                 <h3>Categories</h3>
                 <ul>
@@ -48,23 +48,23 @@
                     <li data-category="beverages">Beverages</li>
                 </ul>
             </div>
-            
+
             <div class="filters">
                 <h3>Filters</h3>
                 <div class="filter-option">
-                    <input type="checkbox" id="vegetarian" checked>
+                    <input type="checkbox" id="vegetarian" checked />
                     <label for="vegetarian">Vegetarian</label>
                 </div>
                 <div class="filter-option">
-                    <input type="checkbox" id="vegan">
+                    <input type="checkbox" id="vegan" />
                     <label for="vegan">Vegan</label>
                 </div>
                 <div class="filter-option">
-                    <input type="checkbox" id="gluten-free">
+                    <input type="checkbox" id="gluten-free" />
                     <label for="gluten-free">Gluten Free</label>
                 </div>
             </div>
-            
+
             <div class="quick-stats">
                 <div class="stat-item">
                     <i class="fas fa-clock"></i>
@@ -72,11 +72,11 @@
                 </div>
                 <div class="stat-item">
                     <i class="fas fa-utensils"></i>
-                    <p>Dishes Available: <span>42</span></p>
+                    <p>Dishes Available: <span id="dishesCount">0</span></p>
                 </div>
             </div>
         </div>
-        
+
         <div class="menu-content">
             <div class="menu-header">
                 <h2>Today's Menu</h2>
@@ -89,194 +89,13 @@
                     </select>
                 </div>
             </div>
-            
-            <div class="special-offers">
-                <div class="offer-card">
-                    <div class="offer-badge">Special</div>
-                    <h3>Meal Deal</h3>
-                    <p>Burger + Fries + Drink for just $9.99</p>
-                    <button class="btn btn-offer">Add to Cart</button>
-                </div>
-                <div class="offer-card">
-                    <div class="offer-badge">Limited</div>
-                    <h3>Student Discount</h3>
-                    <p>10% off all items with student ID</p>
-                </div>
+
+            <div class="special-offers" style="display:none;">
+                <!-- Removed hardcoded special offers -->
             </div>
-            
+
             <div class="menu-items-grid">
-                <!-- Breakfast Items -->
-                <div class="menu-item" data-category="breakfast" data-vegetarian="true">
-                    <div class="item-image">
-                        <img src="../images/breakfast1.jpg" alt="Pancakes">
-                        <div class="veg-badge"><i class="fas fa-leaf"></i></div>
-                    </div>
-                    <div class="item-details">
-                        <h3>Pancakes with Maple Syrup</h3>
-                        <p class="item-description">Fluffy pancakes served with maple syrup and fresh berries</p>
-                        <div class="item-meta">
-                            <span class="item-category">Breakfast</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 10 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$6.99</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="breakfast">
-                    <div class="item-image">
-                        <img src="../images/breakfast2.jpg" alt="English Breakfast">
-                    </div>
-                    <div class="item-details">
-                        <h3>Full English Breakfast</h3>
-                        <p class="item-description">Eggs, bacon, sausages, beans, mushrooms, and toast</p>
-                        <div class="item-meta">
-                            <span class="item-category">Breakfast</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 15 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$8.99</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Lunch Items -->
-                <div class="menu-item" data-category="lunch" data-vegetarian="true">
-                    <div class="item-image">
-                        <img src="../images/lunch1.jpg" alt="Vegetable Pasta">
-                        <div class="veg-badge"><i class="fas fa-leaf"></i></div>
-                    </div>
-                    <div class="item-details">
-                        <h3>Vegetable Pasta</h3>
-                        <p class="item-description">Penne pasta with seasonal vegetables in tomato sauce</p>
-                        <div class="item-meta">
-                            <span class="item-category">Lunch</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 12 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$7.50</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="lunch">
-                    <div class="item-image">
-                        <img src="../images/lunch2.jpg" alt="Chicken Burger">
-                    </div>
-                    <div class="item-details">
-                        <h3>Chicken Burger</h3>
-                        <p class="item-description">Grilled chicken breast with lettuce, tomato, and mayo</p>
-                        <div class="item-meta">
-                            <span class="item-category">Lunch</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 10 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$6.99</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="lunch">
-                    <div class="item-image">
-                        <img src="../images/lunch3.jpg" alt="Margherita Pizza">
-                    </div>
-                    <div class="item-details">
-                        <h3>Margherita Pizza</h3>
-                        <p class="item-description">Classic pizza with tomato sauce, mozzarella, and basil</p>
-                        <div class="item-meta">
-                            <span class="item-category">Lunch</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 15 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$8.50</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Dinner Items -->
-                <div class="menu-item" data-category="dinner">
-                    <div class="item-image">
-                        <img src="../images/dinner1.jpg" alt="Grilled Salmon">
-                    <div class="popular-badge"><i class="fas fa-star"></i> Popular</div>
-                    </div>
-                    <div class="item-details">
-                        <h3>Grilled Salmon</h3>
-                        <p class="item-description">Fresh salmon fillet with roasted vegetables</p>
-                        <div class="item-meta">
-                            <span class="item-category">Dinner</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 20 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$12.99</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="menu-item" data-category="dinner" data-vegetarian="true">
-                    <div class="item-image">
-                        <img src="../images/dinner2.jpg" alt="Vegetable Curry">
-                        <div class="veg-badge"><i class="fas fa-leaf"></i></div>
-                    </div>
-                    <div class="item-details">
-                        <h3>Vegetable Curry</h3>
-                        <p class="item-description">Mixed vegetables in aromatic curry sauce with rice</p>
-                        <div class="item-meta">
-                            <span class="item-category">Dinner</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 15 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$9.50</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Snacks -->
-                <div class="menu-item" data-category="snacks" data-vegetarian="true">
-                    <div class="item-image">
-                        <img src="../images/snack1.jpg" alt="French Fries">
-                        <div class="veg-badge"><i class="fas fa-leaf"></i></div>
-                    </div>
-                    <div class="item-details">
-                        <h3>French Fries</h3>
-                        <p class="item-description">Crispy golden fries with ketchup</p>
-                        <div class="item-meta">
-                            <span class="item-category">Snacks</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 8 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$3.99</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Beverages -->
-                <div class="menu-item" data-category="beverages" data-vegetarian="true">
-                    <div class="item-image">
-                        <img src="../images/drink1.jpg" alt="Fresh Orange Juice">
-                        <div class="veg-badge"><i class="fas fa-leaf"></i></div>
-                    </div>
-                    <div class="item-details">
-                        <h3>Fresh Orange Juice</h3>
-                        <p class="item-description">Freshly squeezed orange juice</p>
-                        <div class="item-meta">
-                            <span class="item-category">Beverages</span>
-                            <span class="item-time"><i class="fas fa-clock"></i> 2 mins</span>
-                        </div>
-                        <div class="item-footer">
-                            <span class="item-price">$2.50</span>
-                            <button class="btn btn-add-to-cart">Add to Cart</button>
-                        </div>
-                    </div>
-                </div>
+                <!-- Menu items will be dynamically added here by JS -->
             </div>
         </div>
     </main>
@@ -287,36 +106,34 @@
             <h3>Your Cart</h3>
             <button class="btn-close-cart"><i class="fas fa-times"></i></button>
         </div>
-        
+
         <div class="cart-items">
-            <!-- Cart items will be added dynamically -->
             <div class="empty-cart">
                 <i class="fas fa-shopping-cart"></i>
                 <p>Your cart is empty</p>
             </div>
         </div>
-        
+
         <div class="cart-summary">
             <div class="summary-row">
                 <span>Subtotal</span>
-                <span class="subtotal">$0.00</span>
+                <span class="subtotal">₹0.00</span>
             </div>
             <div class="summary-row">
                 <span>Tax (10%)</span>
-                <span class="tax">$0.00</span>
+                <span class="tax">₹0.00</span>
             </div>
             <div class="summary-row total">
                 <span>Total</span>
-                <span class="total-amount">$0.00</span>
+                <span class="total-amount">₹0.00</span>
             </div>
-            
+
             <button class="btn btn-checkout">Proceed to Checkout</button>
         </div>
     </aside>
-    
+
     <div class="cart-overlay"></div>
 
-    <script src="../js/main.js"></script>
-    <script src="menu.js"></script>
+    <script src="../js/menu.js"></script>
 </body>
 </html>

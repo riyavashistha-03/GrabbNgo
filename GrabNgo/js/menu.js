@@ -17,15 +17,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartOverlay = document.querySelector('.cart-overlay');
     const closeCartButton = document.querySelector('.btn-close-cart');
     const cartLink = document.querySelector('a[href="#"]'); // Update this selector based on your actual cart link
-    
+
     // Cart state
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
+
     // Initialize the page
     fetchMenuItems();
     updateCartCount();
     renderCartItems();
-    
+
     // Event Listeners
     categoryFilters.forEach(filter => {
         filter.addEventListener('click', function() {
@@ -34,58 +34,66 @@ document.addEventListener('DOMContentLoaded', function() {
             filterMenuItems();
         });
     });
-    
+
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', filterMenuItems);
     });
-    
+
     sortSelect.addEventListener('change', sortMenuItems);
-    
+
     searchButton.addEventListener('click', searchMenuItems);
     searchInput.addEventListener('keyup', function(e) {
         if (e.key === 'Enter') searchMenuItems();
     });
-    
-    cartLink.addEventListener('click', function(e) {
-        e.preventDefault();
-        openCart();
-    });
-    
-    closeCartButton.addEventListener('click', closeCart);
-    cartOverlay.addEventListener('click', closeCart);
-    
-    checkoutButton.addEventListener('click', async function() {
-        if (cart.length === 0) {
-            alert('Your cart is empty!');
-            return;
-        }
-        try {
-            const response = await fetch('https://your-backend-api.com/api/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-                },
-                body: JSON.stringify({ items: cart })
-            });
-            if (!response.ok) {
-                throw new Error('Failed to place order');
+
+    if (cartLink) {
+        cartLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            openCart();
+        });
+    };
+
+    if (closeCartButton) {
+        closeCartButton.addEventListener('click', closeCart);
+    }
+
+    if (cartOverlay) {
+        cartOverlay.addEventListener('click', closeCart);
+    }
+
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', async function() {
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
             }
-            alert('Order placed successfully!');
-            cart = [];
-            localStorage.removeItem('cart');
-            updateCartCount();
-            renderCartItems();
-            closeCart();
-        } catch (error) {
-            alert('Error placing order: ' + error.message);
-        }
-    });
-    
+            try {
+                const response = await fetch('http://localhost:5000/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    },
+                    body: JSON.stringify({ items: cart })
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to place order');
+                }
+                alert('Order placed successfully!');
+                cart = [];
+                localStorage.removeItem('cart');
+                updateCartCount();
+                renderCartItems();
+                closeCart();
+            } catch (error) {
+                alert('Error placing order: ' + error.message);
+            }
+        });
+    }
     // Functions
     async function fetchMenuItems() {
         try {
-            const response = await fetch('https://your-backend-api.com/api/menu');
+            const response = await fetch('http://localhost:5000/api/dishes');
             if (!response.ok) {
                 throw new Error('Failed to fetch menu items');
             }
@@ -95,30 +103,38 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error fetching menu items:', error);
         }
     }
-    
+
     function renderMenuItems(menuItems) {
         if (!menuItemsContainer) return;
         menuItemsContainer.innerHTML = '';
         menuItems.forEach(item => {
+            if (item.price === undefined || item.price === null) {
+                console.warn(`Dish ${item.name} is missing price, skipping.`);
+                return;
+            }
             const itemElement = document.createElement('div');
             itemElement.className = 'menu-item';
-            itemElement.dataset.id = item.id;
-            itemElement.dataset.category = item.category;
+            itemElement.dataset.id = item._id || item.id;
+            itemElement.dataset.category = item.category || '';
             itemElement.dataset.vegetarian = item.vegetarian ? 'true' : 'false';
+            let imageUrl = item.imageUrl ? item.imageUrl : '../images/default-dish.jpg';
+            if (imageUrl && !imageUrl.startsWith('http')) {
+                imageUrl = `http://localhost:5000/${imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl}`;
+            }
             itemElement.innerHTML = `
                 <div class="item-image">
-                    <img src="${item.image || '../images/default-dish.jpg'}" alt="${item.name}">
+                    <img src="${imageUrl}" alt="${item.name}" />
                 </div>
                 <div class="item-details">
                     <h3>${item.name}</h3>
                     <p class="item-description">${item.description || ''}</p>
-                    <p class="item-price">$${item.price.toFixed(2)}</p>
+                    <p class="item-price">₹${item.price.toFixed(2)}</p>
                     <button class="btn btn-add-to-cart">Add to Cart</button>
                 </div>
             `;
             menuItemsContainer.appendChild(itemElement);
         });
-        // Update menuItems NodeList for filtering and searching
+        // Add event listeners for add to cart buttons
         menuItemsContainer.querySelectorAll('.btn-add-to-cart').forEach(button => {
             button.addEventListener('click', function() {
                 const menuItem = this.closest('.menu-item');
@@ -126,19 +142,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
     function filterMenuItems() {
         const activeCategory = document.querySelector('.categories li.active').dataset.category;
         const vegetarianChecked = document.getElementById('vegetarian').checked;
-        
+
         const menuItems = document.querySelectorAll('.menu-item');
         menuItems.forEach(item => {
             const itemCategory = item.dataset.category;
             const isVegetarian = item.dataset.vegetarian === 'true';
-            
+
             const categoryMatch = activeCategory === 'all' || itemCategory === activeCategory;
             const vegetarianMatch = !vegetarianChecked || isVegetarian;
-            
+
             if (categoryMatch && vegetarianMatch) {
                 item.style.display = 'flex';
             } else {
@@ -146,20 +162,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
     function sortMenuItems() {
         const sortValue = sortSelect.value;
         const menuContainer = document.querySelector('.menu-items-grid');
         const items = Array.from(document.querySelectorAll('.menu-item'));
-        
+
         items.sort((a, b) => {
             switch(sortValue) {
                 case 'price-asc':
-                    return parseFloat(a.querySelector('.item-price').textContent.replace('$', '')) - 
-                           parseFloat(b.querySelector('.item-price').textContent.replace('$', ''));
+                    return parseFloat(a.querySelector('.item-price').textContent.replace('₹', '')) -
+                           parseFloat(b.querySelector('.item-price').textContent.replace('₹', ''));
                 case 'price-desc':
-                    return parseFloat(b.querySelector('.item-price').textContent.replace('$', '')) - 
-                           parseFloat(a.querySelector('.item-price').textContent.replace('$', ''));
+                    return parseFloat(b.querySelector('.item-price').textContent.replace('₹', '')) -
+                           parseFloat(a.querySelector('.item-price').textContent.replace('₹', ''));
                 case 'name':
                     return a.querySelector('h3').textContent.localeCompare(b.querySelector('h3').textContent);
                 case 'popular':
@@ -167,18 +182,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     return 0;
             }
         });
-        
+
         items.forEach(item => menuContainer.appendChild(item));
     }
-    
+
     function searchMenuItems() {
         const searchTerm = searchInput.value.toLowerCase();
         const menuItems = document.querySelectorAll('.menu-item');
-        
+
         menuItems.forEach(item => {
             const itemName = item.querySelector('h3').textContent.toLowerCase();
             const itemDescription = item.querySelector('.item-description').textContent.toLowerCase();
-            
+
             if (itemName.includes(searchTerm) || itemDescription.includes(searchTerm)) {
                 item.style.display = 'flex';
             } else {
@@ -186,15 +201,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     function addToCart(menuItem) {
         const itemId = menuItem.dataset.id;
         const itemName = menuItem.querySelector('h3').textContent;
-        const itemPrice = parseFloat(menuItem.querySelector('.item-price').textContent.replace('$', ''));
+        const itemPrice = parseFloat(menuItem.querySelector('.item-price').textContent.replace('₹', ''));
         const itemImage = menuItem.querySelector('.item-image img').src;
-        
+
         const existingItem = cart.find(item => item.id === itemId);
-        
+
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
@@ -206,18 +221,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 quantity: 1
             });
         }
-        
+
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
         renderCartItems();
         showAddToCartConfirmation(itemName);
     }
-    
+
     function updateCartCount() {
         const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
         cartCount.textContent = totalItems;
     }
-    
+
     function renderCartItems() {
         if (cart.length === 0) {
             cartItemsContainer.innerHTML = `
@@ -226,18 +241,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p>Your cart is empty</p>
                 </div>
             `;
-            subtotalElement.textContent = '$0.00';
-            taxElement.textContent = '$0.00';
-            totalElement.textContent = '$0.00';
+            subtotalElement.textContent = '₹0.00';
+            taxElement.textContent = '₹0.00';
+            totalElement.textContent = '₹0.00';
             return;
         }
-        
+
         let cartHTML = '';
         let subtotal = 0;
-        
+
         cart.forEach(item => {
             subtotal += item.price * item.quantity;
-            
+
             cartHTML += `
                 <div class="cart-item" data-id="${item.id}">
                     <div class="cart-item-image">
@@ -245,7 +260,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="cart-item-details">
                         <h4>${item.name}</h4>
-                        <p>$${item.price.toFixed(2)}</p>
+                        <p>₹${item.price.toFixed(2)}</p>
                         <div class="cart-item-quantity">
                             <button class="btn-quantity btn-decrease"><i class="fas fa-minus"></i></button>
                             <span>${item.quantity}</span>
@@ -258,29 +273,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
         });
-        
+
         const tax = subtotal * 0.10; // 10% tax
         const total = subtotal + tax;
-        
+
         cartItemsContainer.innerHTML = cartHTML;
-        subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
-        taxElement.textContent = `$${tax.toFixed(2)}`;
-        totalElement.textContent = `$${total.toFixed(2)}`;
-        
+        subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+        taxElement.textContent = `₹${tax.toFixed(2)}`;
+        totalElement.textContent = `₹${total.toFixed(2)}`;
+
         document.querySelectorAll('.btn-remove').forEach(button => {
             button.addEventListener('click', function() {
                 const itemId = this.closest('.cart-item').dataset.id;
                 removeFromCart(itemId);
             });
         });
-        
+
         document.querySelectorAll('.btn-decrease').forEach(button => {
             button.addEventListener('click', function() {
                 const itemId = this.closest('.cart-item').dataset.id;
                 updateCartItemQuantity(itemId, -1);
             });
         });
-        
+
         document.querySelectorAll('.btn-increase').forEach(button => {
             button.addEventListener('click', function() {
                 const itemId = this.closest('.cart-item').dataset.id;
@@ -288,20 +303,20 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
     function removeFromCart(itemId) {
         cart = cart.filter(item => item.id !== itemId);
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
         renderCartItems();
     }
-    
+
     function updateCartItemQuantity(itemId, change) {
         const item = cart.find(item => item.id === itemId);
-        
+
         if (item) {
             item.quantity += change;
-            
+
             if (item.quantity <= 0) {
                 removeFromCart(itemId);
             } else {
@@ -311,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     function showAddToCartConfirmation(itemName) {
         const confirmation = document.createElement('div');
         confirmation.className = 'add-to-cart-confirmation';
@@ -319,11 +334,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <p>Added ${itemName} to cart</p>
         `;
         document.body.appendChild(confirmation);
-        
+
         setTimeout(() => {
             confirmation.classList.add('show');
         }, 10);
-        
+
         setTimeout(() => {
             confirmation.classList.remove('show');
             setTimeout(() => {
@@ -331,13 +346,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }, 2000);
     }
-    
+
     function openCart() {
         cartSidebar.classList.add('open');
         cartOverlay.classList.add('open');
         document.body.style.overflow = 'hidden';
     }
-    
+
     function closeCart() {
         cartSidebar.classList.remove('open');
         cartOverlay.classList.remove('open');

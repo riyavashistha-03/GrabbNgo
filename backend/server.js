@@ -13,6 +13,9 @@ app.use(express.json());
 // Serve static frontend files from GrabNgo/GrabNgo directory
 app.use(express.static(__dirname + '/../GrabNgo/GrabNgo'));
 
+// Serve static files from uploads directory for dish images
+app.use('/uploads', express.static(__dirname + '/uploads'));
+
 // Connect to MongoDB Atlas using Mongoose with Stable API version
 const uri = process.env.MONGODB_URI;
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };

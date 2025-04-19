@@ -4,7 +4,7 @@
 }
 
 .user-header {
-    background-color: var(--white);
+    background-color: pink;
     box-shadow: var(--shadow);
     position: sticky;
     top: 0;
