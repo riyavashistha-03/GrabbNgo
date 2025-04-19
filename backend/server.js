@@ -9,6 +9,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve static frontend files from GrabNgo/GrabNgo directory
+app.use(express.static(__dirname + '/../GrabNgo/GrabNgo'));
+
 // Connect to MongoDB Atlas using Mongoose with Stable API version
 const uri = process.env.MONGODB_URI;
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
