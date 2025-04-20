@@ -1,18 +1,17 @@
 /* Base Styles */
 :root {
-    --primary-color: #8B5A2B; /* Vintage Brown */
-    --secondary-color: #D4A76A; /* Light Brown */
-    --accent-color: #5C2018; /* Dark Red */
-    --light-color: #F3E9DC; /* Cream */
-    --dark-color: #2C1810; /* Dark Brown */
-    --text-color: #333;
-    --text-light: #777;
+    --primary-color: #bc6c25;
+    --secondary-color: #d4a76a;
+    --accent-color: #283618;
+    --light-color: #fefae0;
+    --dark-color: #2c1810;
+    --text-color: #ffecd1;
+    --text-light: #606c38;
     --white: #fff;
     --black: #000;
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
-}
-
+  }
 * {
     margin: 0;
     padding: 0;
@@ -23,7 +22,7 @@ body {
     font-family: 'Playfair Display', serif;
     color: var(--text-color);
     line-height: 1.6;
-    background-color: var(--light-color);
+    background-color: var(--accent-color);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -115,7 +114,7 @@ img {
     color: var(--secondary-color);
 }
 
-.welcome-message p {
+.welcome-message h3 {
     margin-bottom: 2rem;
     line-height: 1.6;
     opacity: 0.9;
@@ -145,6 +144,13 @@ img {
 .highlight {
     color: var(--secondary-color);
     font-weight: 600;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.highlight:hover{
+    color: white;
+    transform: scale(1.2);
+    font-size: 1.2rem;
 }
 
 /* Form Section */
@@ -278,14 +284,14 @@ label {
 }
 
 .text-link {
-    color: var(--primary-color);
+    color: var(--accent-color);
     font-weight: 500;
     transform: translateY(-4px);
     transition: var(--transition);
 }
 
 .text-link:hover {
-    color: var(--accent-color);
+    color: var(--primary-color);
 }
 
 /* Buttons */
@@ -302,12 +308,12 @@ label {
 }
 
 .btn-primary {
-    background-color: var(--primary-color);
+    background-color: var(--accent-color);
     color: var(--white);
 }
 
 .btn-primary:hover {
-    background-color: var(--accent-color);
+    background-color: var(--primary-color);
     transform: translateY(-2px);
 }
 
@@ -367,4 +373,8 @@ label {
     .auth-branding, .auth-form-wrapper {
         padding: 30px 15px;
     }
+}
+
+.login-msg {
+    color: var(--white);
 }

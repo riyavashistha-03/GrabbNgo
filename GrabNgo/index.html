@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GrabNGo - University Canteen Food Ordering</title>
     <link rel="stylesheet" href="css/index-only.css" />
+    
+    
 
     <link
       rel="stylesheet"
@@ -18,6 +20,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   </head>
   <body>
     <header class="luxury-header">
@@ -25,6 +28,10 @@
         <div class="logo">
           <h1>Grab<span>N</span>Go</h1>
         </div>
+        <ul class="nav-links">
+          <li><a href="#features">Why Choose GrabNGo</a></li>
+          <li><a href="#how-it-works">How it works</a></li>
+        </ul>
         <div class="auth-buttons">
           <a href="login.html" class="btn btn-login">Login</a>
           <a href="signup.html" class="btn btn-signup">Sign Up</a>
@@ -32,7 +39,7 @@
       </nav>
       <div class="hero">
         <div class="hero-content">
-          <h1>Premium Food Ordering for <span>University Canteen</span></h1>
+          <h1>Feeling hungry? Let’s fix that.<span> With GrabNGo</span></h1>
           <p>
             Order your favorite meals with just a few taps and enjoy a seamless
             dining experience on campus.
@@ -43,17 +50,34 @@
           </div>
         </div>
         <div class="hero-image">
-          <div class="carousel">
-            <img class="carousel-image" src="images/delicious_img.jpg" alt="Food Item 1" />
-            <img class="carousel-image" src="images/placeholder2.jpg" alt="Food Item 2" />
-            <img class="carousel-image" src="images/placeholder3.jpg" alt="Food Item 3" />
+          <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+            <div class="carousel-inner">
+              <div class="carousel-item active">
+                <img src="images/delicious_img.jpg" class="d-block w-100" alt="Food Item 1" />
+              </div>
+              <div class="carousel-item">
+                <img src="images/crousel1.jpg" class="d-block w-100" alt="Food Item 2" />
+              </div>
+              <div class="carousel-item">
+                <img src="images/crousel2.jpg" class="d-block w-100" alt="Food Item 3" />
+              </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
           </div>
+          
         </div>
       </div>
     </header>
 
     <section id="features" class="features">
-      <h2>Why Choose GrabNGo</h2>
+      <h2 class="features-heading">Why Choose GrabNGo</h2>
       <div class="feature-grid">
         <div class="feature-card">
           <i class="fas fa-bolt"></i>
@@ -74,6 +98,47 @@
           <i class="fas fa-clock"></i>
           <h3>Time Saving</h3>
           <p>More time to study, less time waiting in line.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fas fa-star"></i>
+          <h3>Ratings and Feedback</h3>
+          <p>Rate your favourite dishes and leave feedback.</p>
+        </div>
+        <div class="feature-card">
+          <i class="fa-regular fa-face-kiss-beam"></i>
+          <h3>Customise Your Order</h3>
+          <p>Choose from a variety of options to make your meal perfect.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+      <h2>How it works</h2>
+      <div class="steps-container">
+        <div class="step-box">
+          <i class="fas fa-user-plus"></i>
+          <h3>Sign Up</h3>
+          <p>Sign up as a user or admin if applicable.</p>
+        </div>
+        <div class="step-box">
+          <i class="fas fa-book-open"></i>
+          <h3>Browse Menu</h3>
+          <p>Explore our diverse menu to find your favorite meals.</p>
+        </div>
+        <div class="step-box">
+          <i class="fas fa-shopping-cart"></i>
+          <h3>Add to Tray</h3>
+          <p>Add your favorite items to the tray for easy ordering.</p>
+        </div>
+        <div class="step-box">
+          <i class="fas fa-credit-card"></i>
+          <h3>Easy Payment</h3>
+          <p>Make secure and easy online payments.</p>
+        </div>
+        <div class="step-box">
+          <i class="fas fa-check-circle"></i>
+          <h3>Order Confirmed</h3>
+          <p>Receive your order token and confirmation.</p>
         </div>
       </div>
     </section>
@@ -108,5 +173,6 @@
     </footer>
 
     <script src="js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
