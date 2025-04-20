@@ -4,65 +4,93 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Staff Orders | GrabNGo</title>
-    <link rel="stylesheet" href="../css/order.css" />
+    <link rel="stylesheet" href="../css/staff.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
-<body class="staff-orders">
-    <header class="staff-header">
-        <nav>
-            <div class="logo">
-                <h1>Grab<span>N</span>Go</h1>
+<body class="staff-dashboard">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>GrabNGo</h2>
+                <p>Staff Dashboard</p>
             </div>
-            <div class="staff-nav">
-                <a href="dashboard.html">Dashboard</a>
-                <a href="order.html" class="active">Orders</a>
-                <a href="add-dish.html">Add Dish</a>
-                <a href="reports.html">Reports</a>
-                <a href="settings.html">Settings</a>
-                <a href="../index.html">Logout</a>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="add-dish.html">
+                            <i class="fas fa-utensils"></i>
+                            <span>Manage Menu</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="order.html">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Orders</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="reports.html">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="../index.html" class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
             </div>
-        </nav>
-    </header>
-
-    <main class="orders-container">
-        <h2>Manage Orders</h2>
-        <table class="orders-table">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>User</th>
-                    <th>Items</th>
-                    <th>Status</th>
-                    <th>Update Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Example order row -->
-                <tr>
-                    <td>#1001</td>
-                    <td>John Doe</td>
-                    <td>
-                        <ul class="order-items">
-                            <li>Chicken Burger x1</li>
-                            <li>French Fries x1</li>
-                        </ul>
-                    </td>
-                    <td class="current-status">Pending</td>
-                    <td>
-                        <select class="status-select">
-                            <option value="Pending" selected>Pending</option>
-                            <option value="Preparing">Preparing</option>
-                            <option value="Ready">Ready</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Cancelled">Cancelled</option>
-                        </select>
-                        <button class="btn-update">Update</button>
-                    </td>
-                </tr>
-                <!-- More order rows can be dynamically added here -->
-            </tbody>
-        </table>
-    </main>
+        </aside>
+        
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <h1>Manage Orders</h1>
+                </div>
+                <div class="header-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge"></span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../images/staff-avatar.jpg" alt="Staff Avatar">
+                    </div>
+                </div>
+            </header>
+            
+            <div class="dashboard-content">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>User</th>
+                            <th>Items</th>
+                            <th>Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic order rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
 
     <script>
         // Example JavaScript to handle status update button clicks

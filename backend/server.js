@@ -6,8 +6,8 @@ const cors = require('cors');
 const app = express();
 
 // Middleware
-app.use(cors());
-app.options('*', cors());
+app.use(cors({ origin: '*' }));
+app.options('*', cors({ origin: '*' }));
 app.use(express.json());
 
 // Serve static frontend files from GrabNgo/GrabNgo directory

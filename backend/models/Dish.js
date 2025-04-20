@@ -7,7 +7,9 @@ const dishSchema = new mongoose.Schema({
     availability: { type: String, default: 'available' },
     description: { type: String },
     imageUrl: { type: String },
-    vegetarian: { type: Boolean, default: false }
+    vegetarian: { type: Boolean, default: false },
+    averageRating: { type: Number, default: 0 },
+    ratingCount: { type: Number, default: 0 }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Dish', dishSchema);

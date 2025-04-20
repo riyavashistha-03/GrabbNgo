@@ -128,12 +128,128 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="item-details">
                     <h3>${item.name}</h3>
                     <p class="item-description">${item.description || ''}</p>
-                    <p class="item-price">₹${item.price.toFixed(2)}</p>
-                    <button class="btn btn-add-to-cart">Add to Cart</button>
-                </div>
-            `;
-            menuItemsContainer.appendChild(itemElement);
+            <p class="item-price">₹${item.price.toFixed(2)}</p>
+            <div class="item-rating" data-dish-id="${item._id}">
+                <span class="average-rating">${item.averageRating ? item.averageRating.toFixed(1) : '0.0'}</span>
+                <span class="stars">
+                    ${renderStars(item.averageRating)}
+                </span>
+                <button class="btn btn-rate">Rate</button>
+            </div>
+            <button class="btn btn-add-to-cart">Add to Cart</button>
+        </div>
+    `;
+    menuItemsContainer.appendChild(itemElement);
+});
+
+function renderStars(rating) {
+    const fullStars = Math.floor(rating);
+    const halfStar = rating - fullStars >= 0.5;
+    let starsHtml = '';
+    for (let i = 0; i < fullStars; i++) {
+        starsHtml += '<i class="fas fa-star"></i>';
+    }
+    if (halfStar) {
+        starsHtml += '<i class="fas fa-star-half-alt"></i>';
+    }
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+        starsHtml += '<i class="far fa-star"></i>';
+    }
+    return starsHtml;
+}
+
+// Event delegation for rate buttons
+menuItemsContainer.addEventListener('click', function(event) {
+    if (event.target.classList.contains('btn-rate')) {
+        const ratingContainer = event.target.closest('.item-rating');
+        if (!ratingContainer) return;
+        const dishId = ratingContainer.dataset.dishId;
+        openRatingModal(dishId, ratingContainer);
+    }
+});
+
+function openRatingModal(dishId, ratingContainer) {
+    // Create popup box elements
+    const popup = document.createElement('div');
+    popup.className = 'rating-popup';
+    popup.innerHTML = `
+        <div class="popup-content">
+            <h3>Rate this dish</h3>
+            <div class="star-rating">
+                <i class="far fa-star" data-value="1"></i>
+                <i class="far fa-star" data-value="2"></i>
+                <i class="far fa-star" data-value="3"></i>
+                <i class="far fa-star" data-value="4"></i>
+                <i class="far fa-star" data-value="5"></i>
+            </div>
+            <button class="btn btn-submit-rating" disabled>Submit</button>
+            <button class="btn btn-cancel-rating">Cancel</button>
+        </div>
+    `;
+    document.body.appendChild(popup);
+
+    let selectedRating = 0;
+    const stars = popup.querySelectorAll('.star-rating i');
+    const submitBtn = popup.querySelector('.btn-submit-rating');
+    const cancelBtn = popup.querySelector('.btn-cancel-rating');
+
+    stars.forEach(star => {
+        star.addEventListener('mouseenter', () => {
+            highlightStars(stars, star.dataset.value);
         });
+        star.addEventListener('mouseleave', () => {
+            highlightStars(stars, selectedRating);
+        });
+        star.addEventListener('click', () => {
+            selectedRating = star.dataset.value;
+            highlightStars(stars, selectedRating);
+            submitBtn.disabled = false;
+        });
+    });
+
+    submitBtn.addEventListener('click', async () => {
+        if (selectedRating > 0) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/dishes/${dishId}/rate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    },
+                    body: JSON.stringify({ rating: Number(selectedRating) })
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to submit rating');
+                }
+                const data = await response.json();
+                // Update UI with new average rating
+                ratingContainer.querySelector('.average-rating').textContent = data.averageRating.toFixed(1);
+                ratingContainer.querySelector('.stars').innerHTML = renderStars(data.averageRating);
+                alert('Rating submitted successfully');
+                document.body.removeChild(popup);
+            } catch (error) {
+                alert('Error submitting rating: ' + error.message);
+            }
+        }
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        document.body.removeChild(popup);
+    });
+}
+
+function highlightStars(stars, count) {
+    stars.forEach(star => {
+        if (star.dataset.value <= count) {
+            star.classList.remove('far');
+            star.classList.add('fas');
+        } else {
+            star.classList.remove('fas');
+            star.classList.add('far');
+        }
+    });
+}
         // Add event listeners for add to cart buttons
         menuItemsContainer.querySelectorAll('.btn-add-to-cart').forEach(button => {
             button.addEventListener('click', function() {

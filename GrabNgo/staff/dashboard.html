@@ -67,7 +67,7 @@
                 <div class="header-right">
                     <div class="notifications">
                         <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
+                        <span class="badge"></span>
                     </div>
                     <div class="user-profile">
                         <img src="../images/staff-avatar.jpg" alt="Staff Avatar">
@@ -98,7 +98,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>Menu Items</h3>
-                            <p id="menuItemsCount">24</p>
+                            <p id="menuItemsCount"></p>
                         </div>
                     </div>
                     
@@ -108,7 +108,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>Today's Orders</h3>
-                            <p id="todayOrders">56</p>
+                            <p id="todayOrders"></p>
                         </div>
                     </div>
                     
@@ -118,7 +118,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>Active Users</h3>
-                            <p id="activeUsers">142</p>
+                            <p id="activeUsers"></p>
                         </div>
                     </div>
                     
@@ -128,7 +128,7 @@
                         </div>
                         <div class="stat-info">
                             <h3>Today's Revenue</h3>
-                            <p id="todayRevenue">$1,245</p>
+                            <p id="todayRevenue"></p>
                         </div>
                     </div>
                 </div>
@@ -152,30 +152,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>#ORD-001</td>
-                                <td>John Doe</td>
-                                <td>2</td>
-                                <td>$12.50</td>
-                                <td><span class="status preparing">Preparing</span></td>
-                                <td><button class="btn btn-action">Update</button></td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-002</td>
-                                <td>Jane Smith</td>
-                                <td>3</td>
-                                <td>$18.75</td>
-                                <td><span class="status ready">Ready</span></td>
-                                <td><button class="btn btn-action">Update</button></td>
-                            </tr>
-                            <tr>
-                                <td>#ORD-003</td>
-                                <td>Robert Johnson</td>
-                                <td>1</td>
-                                <td>$8.50</td>
-                                <td><span class="status completed">Completed</span></td>
-                                <td><button class="btn btn-action">Update</button></td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -197,6 +173,12 @@
     <!-- Quick Add Dish Modal -->
     <!-- Removed Quick Add Dish Modal to avoid duplication -->
 
+    <script>
+        // Redirect to login if not authenticated
+        if (!localStorage.getItem('authToken')) {
+            window.location.href = '../login.html';
+        }
+    </script>
     <script src="../js/staff.js"></script>
 </body>
 </html>
