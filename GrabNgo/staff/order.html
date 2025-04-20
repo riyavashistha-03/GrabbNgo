@@ -92,22 +92,114 @@
             </div>
         </main>
 
+    <style>
+      /* Popup modal styles */
+      .status-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+      }
+      .status-popup {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      }
+      .status-popup h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.2rem;
+      }
+      .status-popup select {
+        width: 100%;
+        padding: 8px;
+        font-size: 1rem;
+        margin-bottom: 15px;
+      }
+      .status-popup button {
+        padding: 8px 12px;
+        font-size: 1rem;
+        margin-right: 10px;
+        cursor: pointer;
+      }
+      .status-popup .btn-confirm {
+        background-color: #283618;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+      .status-popup .btn-cancel {
+        background-color: #ddd;
+        border: none;
+        border-radius: 4px;
+      }
+    </style>
+
+    <div class="status-popup-overlay" id="statusPopupOverlay">
+      <div class="status-popup">
+        <h3>Update Order Status</h3>
+        <select id="statusSelect">
+          <option value="Preparing">Preparing</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Ready">Ready</option>
+          <option value="Canceled">Canceled</option>
+        </select>
+        <div>
+          <button class="btn-confirm" id="btnConfirmStatus">Confirm</button>
+          <button class="btn-cancel" id="btnCancelStatus">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <script>
-        // Example JavaScript to handle status update button clicks
-        document.querySelectorAll('.btn-update').forEach(button => {
-            button.addEventListener('click', () => {
-                const row = button.closest('tr');
-                const statusSelect = row.querySelector('.status-select');
-                const currentStatusCell = row.querySelector('.current-status');
-                const newStatus = statusSelect.value;
+      let currentRow = null;
 
-                // Update the status cell visually
-                currentStatusCell.textContent = newStatus;
+      function openStatusPopup(row) {
+        currentRow = row;
+        const currentStatusCell = row.querySelector('.current-status');
+        const statusSelect = document.getElementById('statusSelect');
+        statusSelect.value = currentStatusCell.textContent.trim();
+        document.getElementById('statusPopupOverlay').style.display = 'flex';
+      }
 
-                // TODO: Add AJAX call to backend to update order status in database
-                alert(`Order status updated to: ${newStatus}`);
-            });
-        });
+      function closeStatusPopup() {
+        document.getElementById('statusPopupOverlay').style.display = 'none';
+        currentRow = null;
+      }
+
+      document.getElementById('btnCancelStatus').addEventListener('click', () => {
+        closeStatusPopup();
+      });
+
+      document.getElementById('btnConfirmStatus').addEventListener('click', () => {
+        if (!currentRow) return;
+        const statusSelect = document.getElementById('statusSelect');
+        const newStatus = statusSelect.value;
+        const currentStatusCell = currentRow.querySelector('.current-status');
+        currentStatusCell.textContent = newStatus;
+
+        // TODO: Add AJAX call to backend to update order status in database
+
+        closeStatusPopup();
+      });
+
+      // Use event delegation to handle clicks on update buttons, including dynamically added rows
+      document.querySelector('tbody').addEventListener('click', (event) => {
+        if (event.target.classList.contains('btn-update') || event.target.closest('.btn-update')) {
+          const button = event.target.classList.contains('btn-update') ? event.target : event.target.closest('.btn-update');
+          const row = button.closest('tr');
+          console.log('Opening status popup for row:', row);
+          openStatusPopup(row);
+        }
+      });
     </script>
 </body>
 </html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your Orders | GrabNGo</title>
+    <link rel="stylesheet" href="../css/menu.css" />
+</head>
+<body class="user-orders">
+    <header class="user-header">
+        <nav>
+            <div class="logo">
+                <h1>Grab<span>N</span>Go</h1>
+            </div>
+            <div class="user-nav">
+                <a href="menu.html"><i class="fas fa-utensils"></i> Menu</a>
+                <a href="orders.html" class="active"><i class="fas fa-history"></i> Orders</a>
+                <a href="#"><i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span></a>
+                <div class="user-profile">
+                    <img src="../images/delicious_img.jpg" alt="User Avatar" />
+                    <span id="userName">User</span>
+                    <div class="dropdown">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="../index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="orders-container">
+        <h2>Track your order like your grades – closely!</h2>
+        <div id="ordersList">
+            <!-- Orders will be loaded here -->
+        </div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const ordersList = document.getElementById('ordersList');
+            try {
+                const response = await fetch('http://localhost:5000/api/orders', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch orders');
+                }
+                const orders = await response.json();
+                if (orders.length === 0) {
+                    ordersList.innerHTML = '<p>You have no previous orders.</p>';
+                    return;
+                }
+                ordersList.innerHTML = '';
+                orders.forEach(order => {
+                    const orderDiv = document.createElement('div');
+                    orderDiv.className = 'order-item';
+                    orderDiv.innerHTML = `
+                        <h3>Order ID: ${order._id}</h3>
+                        <p>Status: ${order.status}</p>
+                        <p>Total Price: ₹${order.totalPrice.toFixed(2)}</p>
+                        <p>Ordered At: ${new Date(order.createdAt).toLocaleString()}</p>
+                        <ul>
+                            ${order.items.map(item => `<li>${item.quantity} x ${item.dish.name || 'Dish'}</li>`).join('')}
+                        </ul>
+                    `;
+                    ordersList.appendChild(orderDiv);
+                });
+            } catch (error) {
+                ordersList.innerHTML = `<p>Error loading orders: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

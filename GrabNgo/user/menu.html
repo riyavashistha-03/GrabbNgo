@@ -20,7 +20,7 @@
             <div class="user-nav">
                 <a href="menu.html" class="active"><i class="fas fa-utensils"></i> Menu</a>
                 <a href="#"><i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span></a>
-                <a href="#"><i class="fas fa-history"></i> Orders</a>
+                <a href="orders.html"><i class="fas fa-history"></i> Orders</a>
                 <div class="user-profile">
                     <img src="../images/delicious_img.jpg" alt="User Avatar" />
                     <span id="userName">User</span>
@@ -39,6 +39,18 @@
             <div class="search-box">
                 <input type="text" placeholder="Search dishes..." />
                 <button><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="canteen-selection">
+                <h3>Select Canteen</h3>
+                <label>
+                    <input type="radio" name="canteen" value="A block" checked />
+                    A block
+                </label>
+                <label>
+                    <input type="radio" name="canteen" value="C block" />
+                    C block
+                </label>
             </div>
 
             <div class="categories">
@@ -83,7 +95,7 @@
 
         <div class="menu-content">
             <div class="menu-header">
-                <h2>Today's Menu</h2>
+                <h2>Today’s mood, today’s menu.</h2>
                 <div class="sort-options">
                     <select id="sortBy">
                         <option value="popular">Most Popular</option>
@@ -107,14 +119,14 @@
     <!-- Cart Sidebar -->
     <aside class="cart-sidebar">
         <div class="cart-header">
-            <h3>Your Cart</h3>
+            <h3>Pick your plate – we’ll handle the rest.</h3>
             <button class="btn-close-cart"><i class="fas fa-times"></i></button>
         </div>
 
         <div class="cart-items">
             <div class="empty-cart">
                 <i class="fas fa-shopping-cart"></i>
-                <p>Your cart is empty</p>
+                <p>Your plate is empty</p>
             </div>
         </div>
 
@@ -124,7 +136,7 @@
                 <span class="subtotal">₹0.00</span>
             </div>
             <div class="summary-row">
-                <span>Tax (10%)</span>
+                <span>Other Charges</span>
                 <span class="tax">₹0.00</span>
             </div>
             <div class="summary-row total">

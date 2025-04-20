@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payment Checkout | GrabNGo</title>
+    <link rel="stylesheet" href="../css/payment.css" />
+</head>
+<body class="payment-page">
+    <header>
+        <h1>Payment Checkout</h1>
+    </header>
+    <main>
+        <section class="payment-methods">
+            <h2>Select Payment Method</h2>
+            <form id="paymentForm">
+                <label>
+                    <input type="radio" name="paymentMethod" value="credit_card" required />
+                    Credit Card
+                </label>
+                <label>
+                    <input type="radio" name="paymentMethod" value="debit_card" />
+                    Debit Card
+                </label>
+                <label>
+                    <input type="radio" name="paymentMethod" value="net_banking" />
+                    Net Banking
+                </label>
+                <label>
+                    <input type="radio" name="paymentMethod" value="upi" />
+                    UPI
+                </label>
+                <label>
+                    <input type="radio" name="paymentMethod" value="cod" />
+                    Cash on Delivery
+                </label>
+                <button type="submit" class="btn-confirm">Confirm Order</button>
+            </form>
+        </section>
+        <section class="order-result" style="display:none;">
+            <h2>Order Confirmation</h2>
+            <p>Your order has been placed successfully!</p>
+            <p>Your order ID is: <span id="orderToken"></span></p>
+            <button id="btnBackToMenu">Back to Menu</button>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentForm = document.getElementById('paymentForm');
+            const orderResultSection = document.querySelector('.order-result');
+            const orderTokenSpan = document.getElementById('orderToken');
+            const btnBackToMenu = document.getElementById('btnBackToMenu');
+
+            // Retrieve cart from localStorage
+            const cart = JSON.parse(localStorage.getItem('checkoutCart')) || [];
+
+            paymentForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                if (cart.length === 0) {
+                    alert('Your cart is empty!');
+                    return;
+                }
+                const formData = new FormData(paymentForm);
+                const paymentMethod = formData.get('paymentMethod');
+                if (!paymentMethod) {
+                    alert('Please select a payment method.');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('http://localhost:5000/api/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + localStorage.getItem('authToken')
+                        },
+                        body: JSON.stringify({ items: cart, paymentMethod })
+                    });
+                    if (!response.ok) {
+                        throw new Error('Failed to place order');
+                    }
+                    const data = await response.json();
+                    // Show order ID
+                    orderTokenSpan.textContent = data.orderId || 'N/A';
+                    paymentForm.style.display = 'none';
+                    orderResultSection.style.display = 'block';
+                    // Clear cart from localStorage
+                    localStorage.removeItem('cart');
+                    localStorage.removeItem('checkoutCart');
+                } catch (error) {
+                    alert('Error placing order: ' + error.message);
+                }
+            });
+
+            btnBackToMenu.addEventListener('click', function() {
+                window.location.href = 'menu.html';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -37,7 +37,7 @@ a {
 }
 
 .user-header .logo span {
-  color: #fff200;
+  color: #dda15e;
 }
 
 .user-nav a {
@@ -49,7 +49,7 @@ a {
 }
 
 .user-nav a.active {
-  border-bottom: 2px solid #fff200;
+  border-bottom: 2px solid #dda15e;
 }
 
 .user-nav a i {
@@ -466,4 +466,16 @@ a {
 .cart-overlay.open {
   opacity: 1;
   visibility: visible;
+}
+
+/* Style for menu-sidebar canteen select options */
+.menu-sidebar {
+  /* container styles if needed */
+}
+
+/* Custom checkbox tick color inside menu-sidebar */
+.menu-sidebar input[type="checkbox"],
+.canteen-selection input[type="checkbox"],
+.canteen-selection input[type="radio"] {
+  accent-color: #283618; /* Indian dark green color for checkbox tick and radio dot */
 }
