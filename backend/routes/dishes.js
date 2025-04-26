@@ -27,6 +27,30 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get dish by ID
+const mongoose = require('mongoose');
+
+router.get('/:id', async (req, res) => {
+    try {
+        const dishId = req.params.id;
+        console.log(`GET /api/dishes/${dishId} requested`);
+
+        if (!mongoose.Types.ObjectId.isValid(dishId)) {
+            return res.status(400).json({ message: 'Invalid dish ID' });
+        }
+
+        const dish = await Dish.findById(dishId);
+        if (!dish) {
+            console.log(`Dish with id ${dishId} not found`);
+            return res.status(404).json({ message: 'Dish not found' });
+        }
+        res.json(dish);
+    } catch (error) {
+        console.error(`Error fetching dish with id ${req.params.id}:`, error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 // Add new dish (staff only)
 router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
     if (req.user.userType !== 'staff') {

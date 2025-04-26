@@ -45,8 +45,21 @@ app.get('/', (req, res) => {
     res.send('GrabNGo Backend API');
 });
 
+const http = require('http');
+
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+server.on('error', (error) => {
+    if (error.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Please free the port or use a different one.`);
+        process.exit(1);
+    } else {
+        console.error('Server error:', error);
+    }
 });
