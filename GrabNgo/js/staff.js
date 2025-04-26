@@ -1,69 +1,6 @@
-// Staff Dashboard JavaScript
-function setupQuickAddDish() {
-  // Placeholder for setupQuickAddDish function
-  // Implement any quick add dish modal or functionality here if needed
-  console.log("setupQuickAddDish function called");
-}
+// Staff Dashboard JavaScript - Updated for Bootstrap 5 integration
 
 document.addEventListener("DOMContentLoaded", function () {
-  setupQuickAddDish();
-
-  // Add dish form submission handler
-  const addDishForm = document.getElementById("addDishForm");
-  if (addDishForm) {
-    addDishForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
-
-      const dishName = document.getElementById("dishName").value.trim();
-      const dishCategory = document.getElementById("dishCategory").value;
-      const dishPrice = parseFloat(document.getElementById("dishPrice").value);
-      const dishAvailability =
-        document.getElementById("dishAvailability").value;
-      const dishDescription = document
-        .getElementById("dishDescription")
-        .value.trim();
-      const dishImageInput = document.getElementById("dishImage");
-      const vegetarian = document.getElementById("vegetarian").checked;
-      const vegan = document.getElementById("vegan").checked;
-      const glutenFree = document.getElementById("glutenFree").checked;
-
-      // Prepare form data for image upload if needed
-      const formData = new FormData();
-      formData.append("name", dishName);
-      formData.append("category", dishCategory);
-      formData.append("price", dishPrice);
-      formData.append("availability", dishAvailability);
-      formData.append("description", dishDescription);
-      formData.append("vegetarian", vegetarian);
-      formData.append("vegan", vegan);
-      formData.append("glutenFree", glutenFree);
-
-      if (dishImageInput.files.length > 0) {
-        formData.append("image", dishImageInput.files[0]);
-      }
-
-      try {
-        const response = await fetch("http://localhost:5000/api/dishes", {
-          method: "POST",
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("authToken"),
-          },
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to add dish");
-        }
-
-        alert("Dish added successfully");
-        addDishForm.reset();
-        // Optionally refresh the menu or UI here
-        fetchAndRenderMenuItems();
-      } catch (error) {
-        alert("Error adding dish: " + error.message);
-      }
-    });
-  }
   // Load staff name from localStorage or default
   const staffNameElement = document.getElementById("staffName");
   if (staffNameElement) {
@@ -74,17 +11,14 @@ document.addEventListener("DOMContentLoaded", function () {
   // Fetch and render popular dishes dynamically
   fetchAndRenderPopularDishes();
 
-  // Setup quick add dish modal
-  setupQuickAddDish();
-
-  // Setup order status buttons
-  // setupOrderStatusButtons();
-
   // Fetch and render current menu items on add-dish page
   fetchAndRenderMenuItems();
 
   // Setup edit and delete buttons for menu items
   setupMenuItemActions();
+
+  // Setup Bootstrap modal triggers if needed
+  // Example: Using Bootstrap 5 modal API for edit dish modal
 });
 
 // Utility function to format currency with Indian Rupee symbol
@@ -146,34 +80,33 @@ async function openEditDishModal(dishId) {
     }
     const dish = await response.json();
 
-    // Assuming there is a modal similar to quickAddModal for editing
-    const editModal = document.getElementById("editDishModal");
-    if (!editModal) {
+    // Assuming Bootstrap modal with id 'editDishModal' exists
+    const editModalEl = document.getElementById("editDishModal");
+    if (!editModalEl) {
       alert("Edit modal not implemented");
       return;
     }
 
     // Populate modal fields with dish data
-    editModal.querySelector("#editDishName").value = dish.name || "";
-    editModal.querySelector("#editDishPrice").value = dish.price || "";
-    editModal.querySelector("#editDishCategory").value = dish.category || "";
-    editModal.querySelector("#editDishAvailability").value =
-      dish.availability || "available";
-    editModal.querySelector("#editDishDescription").value =
-      dish.description || "";
+    editModalEl.querySelector("#editDishName").value = dish.name || "";
+    editModalEl.querySelector("#editDishPrice").value = dish.price || "";
+    editModalEl.querySelector("#editDishCategory").value = dish.category || "";
+    editModalEl.querySelector("#editDishAvailability").value = dish.availability || "available";
+    editModalEl.querySelector("#editDishDescription").value = dish.description || "";
 
-    // Show modal
-    editModal.style.display = "block";
+    // Show modal using Bootstrap Modal API
+    const bootstrapModal = new bootstrap.Modal(editModalEl);
+    bootstrapModal.show();
 
     // Setup save button handler
-    const saveButton = editModal.querySelector(".btn-save");
+    const saveButton = editModalEl.querySelector(".btn-save");
     saveButton.onclick = async () => {
       const updatedDish = {
-        name: editModal.querySelector("#editDishName").value,
-        price: parseFloat(editModal.querySelector("#editDishPrice").value),
-        category: editModal.querySelector("#editDishCategory").value,
-        availability: editModal.querySelector("#editDishAvailability").value,
-        description: editModal.querySelector("#editDishDescription").value,
+        name: editModalEl.querySelector("#editDishName").value,
+        price: parseFloat(editModalEl.querySelector("#editDishPrice").value),
+        category: editModalEl.querySelector("#editDishCategory").value,
+        availability: editModalEl.querySelector("#editDishAvailability").value,
+        description: editModalEl.querySelector("#editDishDescription").value,
       };
 
       try {
@@ -189,7 +122,7 @@ async function openEditDishModal(dishId) {
           throw new Error("Failed to update dish");
         }
         alert("Dish updated successfully");
-        editModal.style.display = "none";
+        bootstrapModal.hide();
         fetchAndRenderMenuItems(); // Refresh menu items
       } catch (error) {
         alert("Error updating dish: " + error.message);
@@ -197,9 +130,9 @@ async function openEditDishModal(dishId) {
     };
 
     // Setup cancel button handler
-    const cancelButton = editModal.querySelector(".btn-cancel");
+    const cancelButton = editModalEl.querySelector(".btn-cancel");
     cancelButton.onclick = () => {
-      editModal.style.display = "none";
+      bootstrapModal.hide();
     };
   } catch (error) {
     alert("Error fetching dish details: " + error.message);
@@ -222,14 +155,14 @@ async function fetchAndRenderPopularDishes() {
     dishesGrid.innerHTML = "";
     data.popularDishes.forEach((dish) => {
       const dishCard = document.createElement("div");
-      dishCard.className = "dish-card";
+      dishCard.className = "dish-card col";
       dishCard.innerHTML = `
-                <div class="dish-image">
-                    <img src="../images/dish-placeholder.jpg" alt="${dish.name}">
-                </div>
-                <div class="dish-info">
-                    <h3>${dish.name}</h3>
-                    <p class="dish-sales">${dish.totalQuantity} orders this week</p>
+                <div class="card h-100">
+                  <img src="../images/dish-placeholder.jpg" class="card-img-top" alt="${dish.name}">
+                  <div class="card-body">
+                    <h5 class="card-title">${dish.name}</h5>
+                    <p class="card-text">${dish.totalQuantity} orders this week</p>
+                  </div>
                 </div>
             `;
       dishesGrid.appendChild(dishCard);
@@ -255,21 +188,25 @@ async function fetchAndRenderMenuItems() {
     menuGrid.innerHTML = "";
     dishes.forEach((dish) => {
       const menuItem = document.createElement("div");
-      menuItem.className = "menu-item";
+      menuItem.className = "menu-item card mb-3";
       menuItem.dataset.id = dish._id;
       const imageUrl = dish.imageUrl ? `http://localhost:5000/${dish.imageUrl}` : "../images/dish-placeholder.jpg";
       menuItem.innerHTML = `
-                <div class="item-image">
-                    <img src="${imageUrl}" alt="${dish.name}">
-                </div>
-                <div class="item-details">
-                    <h4>${dish.name}</h4>
-                    <p class="item-category">${dish.category}</p>
-                    <p class="item-price">${formatCurrency(dish.price)}</p>
-                    <div class="item-actions">
-                        <button class="btn btn-edit"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-delete"><i class="fas fa-trash"></i></button>
+                <div class="row g-0">
+                  <div class="col-md-4">
+                    <img src="${imageUrl}" class="img-fluid rounded-start" alt="${dish.name}">
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body">
+                      <h5 class="card-title">${dish.name}</h5>
+                      <p class="card-text text-muted">${dish.category}</p>
+                      <p class="card-text fw-bold">${formatCurrency(dish.price)}</p>
+                      <div class="btn-group" role="group" aria-label="Menu item actions">
+                        <button type="button" class="btn btn-warning btn-edit"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-delete"><i class="fas fa-trash"></i></button>
+                      </div>
                     </div>
+                  </div>
                 </div>
             `;
       menuGrid.appendChild(menuItem);
@@ -278,5 +215,3 @@ async function fetchAndRenderMenuItems() {
     console.error("Error fetching menu items:", error);
   }
 }
-
-// Other functions like setupOrderStatusButtons, showNotification, etc. remain unchanged

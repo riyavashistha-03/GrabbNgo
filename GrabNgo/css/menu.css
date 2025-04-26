@@ -479,3 +479,14 @@ a {
 .canteen-selection input[type="radio"] {
   accent-color: #283618; /* Indian dark green color for checkbox tick and radio dot */
 }
+
+/* Responsive media queries */
+@media (max-width: 768px) {
+  .menu-items-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .user-header nav {
+    flex-direction: column;
+  }
+}
