@@ -1,20 +1,27 @@
-/* ===== Premium Restaurant Dashboard Styles ===== */
+/* ===== Premium Restaurant Dashboard Styles with Moon Phases Palette ===== */
 :root {
-  /* Updated Color Palette */
-  --primary-color: #e67e22; /* Warm orange */
+  /* Moon Phases Color Palette */
+  --moon-dark: #212A31; /* Dark slate gray */
+  --moon-deep: #253944; /* Darker slate blue */
+  --moon-teal: #124E66; /* Deep teal */
+  --moon-slate: #748D92; /* Muted slate blue */
+--moon-accent: #ac8968; /* New accent color */
+  
+  /* Updated Color Scheme */
+  --primary-color: var(--moon-teal);
   --secondary-color: #f9f3e9; /* Cream white */
-  --dark-color: #2c3e50; /* Deep navy */
-  --light-color: #ffffff; /* Pure white */
-  --text-light: #95a5a6; /* Light gray */
-  --accent-color: #f1c40f; /* Vibrant yellow */
+  --dark-color: var(--moon-dark);
+  --light-color: #ffffff;
+  --text-light: var(--moon-slate);
+  --accent-color: var(--moon-accent);
   
   /* Luxury Theme */
-  --luxury-primary: #2c3e50; /* Deep navy */
-  --luxury-secondary: #34495e; /* Slightly lighter navy */
-  --luxury-accent: #f1c40f; /* Gold yellow */
-  --luxury-light: #ecf0f1; /* Light gray */
-  --luxury-error: #e74c3c; /* Bright red */
-  --luxury-success: #2ecc71; /* Emerald green */
+  --luxury-primary: var(--moon-dark);
+  --luxury-secondary: var(--moon-deep);
+  --luxury-accent: var(--moon-accent);
+  --luxury-light: #f5f7fa;
+  --luxury-error: #e74c3c;
+  --luxury-success: var(--moon-accent);
   
   /* Typography */
   --text-xs: 0.8rem;
@@ -46,7 +53,7 @@ body.staff-dashboard {
 /* ===== Sidebar ===== */
 .sidebar {
   width: 280px;
-  background: linear-gradient(to bottom, var(--dark-color), var(--luxury-secondary));
+  background: linear-gradient(to bottom, var(--moon-dark), var(--moon-deep));
   color: var(--secondary-color);
   position: fixed;
   height: 100vh;
@@ -85,7 +92,7 @@ body.staff-dashboard {
 .sidebar__nav-link:hover,
 .sidebar__nav-link--active {
   background-color: rgba(255,255,255,0.1);
-  color: white;
+  color: var(--moon-accent);
   transform: translateX(5px);
 }
 
@@ -116,7 +123,7 @@ body.staff-dashboard {
 }
 
 .content-header__subtitle {
-  color: var(--text-light);
+  color: var(--moon-slate);
   margin: 0;
   font-size: var(--text-md);
 }
@@ -154,8 +161,8 @@ body.staff-dashboard {
 .dish-form__input:focus,
 .dish-form__select:focus,
 .dish-form__textarea:focus {
-  border-color: var(--luxury-accent);
-  box-shadow: 0 0 0 3px rgba(241, 196, 15, 0.2);
+  border-color: var(--moon-accent);
+  box-shadow: 0 0 0 3px rgba(3, 217, 4, 0.2);
   outline: none;
 }
 
@@ -168,12 +175,12 @@ body.staff-dashboard {
   width: 100%;
   max-width: 300px;
   height: 200px;
-  border: 2px dashed var(--luxury-accent);
+  border: 2px dashed var(--moon-accent);
   border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(241, 196, 15, 0.05);
+  background-color: rgba(3, 217, 4, 0.05);
   cursor: pointer;
   transition: var(--transition-fast);
   position: relative;
@@ -181,7 +188,7 @@ body.staff-dashboard {
 }
 
 .image-preview:hover {
-  background-color: rgba(241, 196, 15, 0.1);
+  background-color: rgba(3, 217, 4, 0.1);
 }
 
 .image-preview img {
@@ -192,7 +199,7 @@ body.staff-dashboard {
 
 /* ===== Buttons ===== */
 .luxury-btn {
-  background: linear-gradient(to right, var(--luxury-primary), var(--luxury-secondary));
+  background: linear-gradient(to right, var(--moon-dark), var(--moon-deep));
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -211,6 +218,7 @@ body.staff-dashboard {
 .luxury-btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  background: linear-gradient(to right, var(--moon-deep), var(--moon-teal));
 }
 
 .luxury-btn:active {
@@ -218,7 +226,20 @@ body.staff-dashboard {
 }
 
 .luxury-btn--accent {
-  background: linear-gradient(to right, var(--accent-color), #f39c12);
+  background: linear-gradient(to right, var(--moon-accent), #02b803);
+}
+
+/* ===== Utility Classes ===== */
+.text-accent {
+  color: var(--moon-accent);
+}
+
+.bg-accent {
+  background-color: var(--moon-accent);
+}
+
+.border-accent {
+  border-color: var(--moon-accent);
 }
 
 /* ===== Responsive Adjustments ===== */
@@ -275,5 +296,13 @@ body.staff-dashboard {
   
   .dish-form__label {
     color: #f5f5f5;
+  }
+  
+  .sidebar {
+    background: linear-gradient(to bottom, #121212, #1a1a1a);
+  }
+  
+  .luxury-btn {
+    background: linear-gradient(to right, #1a1a1a, #252525);
   }
 }

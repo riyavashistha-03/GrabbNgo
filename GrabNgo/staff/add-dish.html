@@ -4,223 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Dish | GrabNGo</title>
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS with Moon Phases Overrides -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/add-dish-luxury.css">
-    <link rel="stylesheet" href="../css/edit-menu.css">
-    
+    <!-- Moon Phases Custom CSS -->
+    <link rel="stylesheet" href="../css/moon-phases-bootstrap.css">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/edit-menu.css">
 </head>
 <body class="staff-dashboard">
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>GrabNGo</h2>
-                <p>Staff Dashboard</p>
+    <div class="dashboard-container d-flex">
+        <!-- Sidebar -->
+        <aside class="sidebar bg-moon-dark text-white d-flex flex-column flex-shrink-0 p-3">
+            <div class="sidebar-header mb-4">
+                <h2 class="sidebar-title fs-4">GrabNGo</h2>
+                <p class="sidebar-subtitle text-moon-slate mb-0">Staff Dashboard</p>
             </div>
             
-            <nav class="sidebar-nav">
-                <ul>
-                    <li>
-                        <a href="dashboard.html">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="active">
-                        <a href="add-dish.html">
-                            <i class="fas fa-utensils"></i>
-                            <span>Manage Menu</span>
+            <nav class="sidebar-nav flex-grow-1">
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link text-white">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
                         </a>
                     </li>
                     <li>
-                        <a href="order.html">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Orders</span>
+                        <a href="add-dish.html" class="nav-link active bg-moon-teal">
+                            <i class="fas fa-utensils me-2"></i>
+                            Manage Menu
                         </a>
                     </li>
                     <li>
-                        <a href="reports.html">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Reports</span>
+                        <a href="order.html" class="nav-link text-white">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Orders
                         </a>
                     </li>
                     <li>
-                        <a href="settings.html">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
+                        <a href="reports.html" class="nav-link text-white">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Reports
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.html" class="nav-link text-white">
+                            <i class="fas fa-cog me-2"></i>
+                            Settings
                         </a>
                     </li>
                 </ul>
             </nav>
             
             <div class="sidebar-footer">
-                <a href="../index.html" class="btn btn-logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+                <a href="../index.html" class="btn btn-success w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    Logout
                 </a>
             </div>
         </aside>
         
-        <main class="main-content">
-            <header class="content-header">
+        <!-- Main Content -->
+        <main class="main-content flex-grow-1 p-4">
+            <header class="content-header d-flex justify-content-between align-items-start mb-4">
                 <div class="header-left">
-                    <h1>Manage Menu</h1>
-                    <p>Add or update dishes in the canteen menu</p>
+                    <h1 class="content-title text-moon-teal mb-1">Manage Menu</h1>
+                    <p class="content-subtitle text-moon-slate mb-0">Add or update dishes in the canteen menu</p>
                 </div>
-                <div class="header-right">
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
-                    </div>
-                    <div class="user-profile">
-                        <img src="../images/staff-avatar.jpg" alt="Staff Avatar">
+                <div class="header-right d-flex align-items-center">
+                    <div class="user-profile ms-3">
+                        <img src="../images/staff-avatar.jpg" alt="Staff Avatar" class="rounded-circle" width="40" height="40">
                     </div>
                 </div>
             </header>
             
             <div class="dashboard-content">
                 <div class="menu-management">
-                    <div class="section-header">
-                        <h2>Add New Dish</h2>
-                        <a href="#" class="btn btn-view-all">View All Dishes</a>
+                    <div class="section-header d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="section-title text-moon-dark">Add New Dish</h2>
+                        <a href="#" class="btn btn-outline-moon-teal">
+                            <i class="fas fa-list me-2"></i>View All Dishes
+                        </a>
                     </div>
                     
-                    <!-- Single add dish form -->
-<form id="addDishForm" class="dish-form">
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="dishName" class="form-label">Dish Name *</label>
-            <input type="text" id="dishName" class="form-control" placeholder="Enter dish name" required>
-        </div>
-        <div class="col-md-6">
-            <label for="dishCategory" class="form-label">Category *</label>
-            <select id="dishCategory" class="form-select" required>
-                <option value="">Select category</option>
-                <option value="breakfast">Breakfast</option>
-                <option value="lunch">Lunch</option>
-                <option value="dinner">Dinner</option>
-                <option value="snacks">Snacks</option>
-                <option value="beverages">Beverages</option>
-            </select>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="dishPrice" class="form-label">Price (₹) *</label>
-            <input type="number" id="dishPrice" class="form-control" min="0" step="0.01" placeholder="Enter price" required>
-        </div>
-        <div class="col-md-6">
-            <label for="dishAvailability" class="form-label">Availability *</label>
-            <select id="dishAvailability" class="form-select" required>
-                <option value="available">Available</option>
-                <option value="unavailable">Unavailable</option>
-            </select>
-        </div>
-    </div>
-    <div class="mb-3">
-        <label for="dishDescription" class="form-label">Description</label>
-        <textarea id="dishDescription" class="form-control" rows="3" placeholder="Enter dish description"></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="dishImage" class="form-label">Dish Image</label>
-        <div class="image-upload-container">
-            <div class="image-preview" id="imagePreview">
-                <img id="previewImage" src="../images/placeholder-image.jpg" alt="Preview" class="img-fluid rounded">
-                <span id="imagePlaceholder">No image selected</span>
-            </div>
-            <div class="upload-actions mt-2">
-                <input type="file" id="dishImage" accept="image/*" class="form-control">
-                <label for="dishImage" class="btn btn-outline-primary mt-2">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span>Choose Image</span>
-                </label>
-                <button type="button" class="btn btn-outline-danger mt-2" id="removeImage">
-                    <i class="fas fa-trash"></i>
-                    <span>Remove</span>
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Dietary Information</label>
-        <div class="form-check">
-            <input type="checkbox" id="vegetarian" class="form-check-input">
-            <label for="vegetarian" class="form-check-label">Vegetarian</label>
-        </div>
-        <div class="form-check">
-            <input type="checkbox" id="vegan" class="form-check-input">
-            <label for="vegan" class="form-check-label">Vegan</label>
-        </div>
-        <div class="form-check">
-            <input type="checkbox" id="glutenFree" class="form-check-input">
-            <label for="glutenFree" class="form-check-label">Gluten Free</label>
-        </div>
-    </div>
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add Dish
-        </button>
-        <button type="reset" class="btn btn-secondary">Reset</button>
-    </div>
-</form>
-                    
-                    <div class="current-menu">
-                        <h3>Current Menu Items</h3>
-                        <div class="menu-items-grid">
-                            <!-- Dish items will be dynamically added here -->
+                    <form id="addDishForm" class="dish-form bg-white p-4 rounded shadow-sm">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dishName" class="form-label text-moon-teal fw-semibold">Dish Name *</label>
+                                <input type="text" id="dishName" class="form-control" placeholder="Enter dish name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dishPrice" class="form-label text-moon-teal fw-semibold">Price (₹) *</label>
+                                <input type="number" id="dishPrice" class="form-control" placeholder="Enter price" required>
+                            </div>
                         </div>
+                        
+                        <div class="mb-3">
+                            <label for="dishDescription" class="form-label text-moon-teal fw-semibold">Description</label>
+                            <textarea id="dishDescription" class="form-control" rows="3" placeholder="Enter dish description"></textarea>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="dishCategory" class="form-label text-moon-teal fw-semibold">Category *</label>
+                                <select id="dishCategory" class="form-select" required>
+                                    <option value="">Select category</option>
+                                    <option value="breakfast">Breakfast</option>
+                                    <option value="lunch">Lunch</option>
+                                    <option value="dinner">Dinner</option>
+                                    <option value="snacks">Snacks</option>
+                                    <option value="beverages">Beverages</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-moon-teal fw-semibold">Availability *</label>
+                                <div class="availability-options d-flex gap-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="availability" id="available" checked>
+                                        <label class="form-check-label" for="available">Available</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="availability" id="unavailable">
+                                        <label class="form-check-label" for="unavailable">Unavailable</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-moon-teal fw-semibold">Dish Image</label>
+                            <div class="image-upload-container border-2 border-dashed border-moon-accent rounded p-3 text-center">
+                                <div class="image-preview mb-2" id="imagePreview">
+                                    <img id="previewImage" src="../images/placeholder-image.jpg" alt="Preview" class="img-fluid rounded" style="max-height: 150px;">
+                                    <span id="imagePlaceholder" class="text-muted d-block">No image selected</span>
+                                </div>
+                                <div class="upload-actions d-flex gap-2 justify-content-center">
+                                    <input type="file" id="dishImage" accept="image/*" class="d-none">
+                                    <label for="dishImage" class="btn btn-sm btn-outline-moon-teal">
+                                        <i class="fas fa-cloud-upload-alt me-1"></i>Choose Image
+                                    </label>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="removeImage">
+                                        <i class="fas fa-trash me-1"></i>Remove
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Add Dish
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary">Reset</button>
+                        </div>
+                    </form>
+                    <div class="menu-items-grid mt-5 row row-cols-1 row-cols-md-2 g-4">
+                        <!-- Dishes will be dynamically rendered here -->
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Edit Dish Modal -->
-    <div id="editDishModal" class="modal" style="display:none;">
-        <div class="modal-content">
-            <span class="close-btn btn-cancel">&times;</span>
-            <h2>Edit Dish</h2>
-            <form id="editDishForm">
-                <div class="form-group">
-                    <label for="editDishName">Dish Name</label>
-                    <input type="text" id="editDishName" required />
-                </div>
-                <div class="form-group">
-                    <label for="editDishCategory">Category</label>
-                    <select id="editDishCategory" required>
-                        <option value="breakfast">Breakfast</option>
-                        <option value="lunch">Lunch</option>
-                        <option value="dinner">Dinner</option>
-                        <option value="snacks">Snacks</option>
-                        <option value="beverages">Beverages</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="editDishPrice">Price (₹)</label>
-                    <input type="number" id="editDishPrice" min="0" step="0.01" required />
-                </div>
-                <div class="form-group">
-                    <label for="editDishAvailability">Availability</label>
-                    <select id="editDishAvailability" required>
-                        <option value="available">Available</option>
-                        <option value="unavailable">Unavailable</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="editDishDescription">Description</label>
-                    <textarea id="editDishDescription" rows="3"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-primary btn-save">Save Changes</button>
-                    <button type="button" class="btn btn-secondary btn-cancel">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/auth.js"></script>
     <script src="../js/staff.js"></script>
-    <!-- Bootstrap 5 JS Bundle CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -1,0 +1,151 @@
+/* Moon Phases Color Palette */
+:root {
+    /* Core Colors */
+    --moon-dark: #212A31;   /* Deep slate */
+    --moon-deep: #253944;   /* Dark teal */
+    --moon-teal: #124E66;   /* Rich teal */
+    --moon-slate: #748D92;  /* Muted slate */
+--moon-accent: #ac8968; /* New accent color */
+    
+    /* Bootstrap Overrides */
+    --bs-primary: var(--moon-teal);
+    --bs-secondary: var(--moon-slate);
+    --bs-success: var(--moon-accent);
+    --bs-info: var(--moon-slate);
+    --bs-dark: var(--moon-dark);
+    --bs-light: #97a6b4;
+    
+    /* Custom Colors */
+    --sidebar-bg: var(--moon-dark);
+    --sidebar-text: white;
+    --content-bg: white;
+    --card-bg: white;
+    --border-color: #dee2e6;
+}
+
+/* Base Styles */
+body.staff-dashboard {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bs-light);
+    color: var(--moon-dark);
+}
+
+/* Layout */
+.dashboard-container {
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 280px;
+    transition: all 0.3s;
+}
+
+.main-content {
+    flex: 1;
+    background-color: var(--content-bg);
+}
+
+/* Bootstrap Component Overrides */
+.btn-primary {
+    --bs-btn-bg: var(--moon-teal);
+    --bs-btn-border-color: var(--moon-teal);
+    --bs-btn-hover-bg: #0e3d52;
+    --bs-btn-hover-border-color: #0c3649;
+    --bs-btn-active-bg: #0c3649;
+    --bs-btn-active-border-color: #0a2f40;
+}
+
+.btn-success {
+    --bs-btn-bg: var(--moon-accent);
+    --bs-btn-border-color: var(--moon-accent);
+    --bs-btn-hover-bg: #02b803;
+    --bs-btn-hover-border-color: #02a803;
+}
+
+.btn-outline-moon-teal {
+    --bs-btn-color: var(--moon-teal);
+    --bs-btn-border-color: var(--moon-teal);
+    --bs-btn-hover-bg: var(--moon-teal);
+    --bs-btn-hover-border-color: var(--moon-teal);
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--moon-teal);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--moon-accent);
+    box-shadow: 0 0 0 0.25rem rgba(3, 217, 4, 0.25);
+}
+
+/* Custom Components */
+.sidebar-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-link {
+    transition: all 0.2s;
+    margin-bottom: 0.25rem;
+    border-radius: 0.25rem;
+}
+
+.nav-link:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--moon-accent) !important;
+}
+
+.content-title {
+    font-weight: 600;
+}
+
+.content-subtitle {
+    font-size: 0.9rem;
+}
+
+.dish-form {
+    border: 1px solid var(--border-color);
+}
+
+.image-upload-container {
+    border-color: var(--moon-accent) !important;
+    background-color: rgba(3, 217, 4, 0.05);
+}
+
+/* Utility Classes */
+.text-moon-dark { color: var(--moon-dark) !important; }
+.text-moon-deep { color: var(--moon-deep) !important; }
+.text-moon-teal { color: var(--moon-teal) !important; }
+.text-moon-slate { color: var(--moon-slate) !important; }
+.text-moon-accent { color: var(--moon-accent) !important; }
+
+.bg-moon-dark { background-color: var(--moon-dark) !important; }
+.bg-moon-deep { background-color: var(--moon-deep) !important; }
+.bg-moon-teal { background-color: var(--moon-teal) !important; }
+.bg-moon-slate { background-color: var(--moon-slate) !important; }
+.bg-moon-accent { background-color: var(--moon-accent) !important; }
+
+.border-moon-accent { border-color: var(--moon-accent) !important; }
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .main-content {
+        padding: 1rem;
+    }
+}

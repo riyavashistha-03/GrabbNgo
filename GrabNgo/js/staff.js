@@ -17,6 +17,57 @@ document.addEventListener("DOMContentLoaded", function () {
   // Setup edit and delete buttons for menu items
   setupMenuItemActions();
 
+  // Setup add dish form submission handler
+  const addDishForm = document.getElementById("addDishForm");
+  if (addDishForm) {
+    addDishForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const name = document.getElementById("dishName").value.trim();
+      const price = parseFloat(document.getElementById("dishPrice").value);
+      const description = document.getElementById("dishDescription").value.trim();
+      const category = document.getElementById("dishCategory").value;
+      const availability = document.getElementById("available").checked ? "available" : "unavailable";
+      const imageInput = document.getElementById("dishImage");
+      const imageFile = imageInput.files[0];
+
+      if (!name || isNaN(price) || !category) {
+        alert("Please fill in all required fields correctly.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("price", price);
+      formData.append("description", description);
+      formData.append("category", category);
+      formData.append("availability", availability);
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/dishes", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("authToken"),
+          },
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to add dish");
+        }
+
+        alert("Dish added successfully");
+        addDishForm.reset();
+        fetchAndRenderMenuItems();
+      } catch (error) {
+        alert("Error adding dish: " + error.message);
+      }
+    });
+  }
+
   // Setup Bootstrap modal triggers if needed
   // Example: Using Bootstrap 5 modal API for edit dish modal
 });
