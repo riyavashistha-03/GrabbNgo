@@ -23,19 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
     addDishForm.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-<<<<<<< HEAD
-      const dishName = document.getElementById("dishName").value.trim();
-      const dishCategory = document.getElementById("dishCategory").value;
-      const dishPrice = parseFloat(document.getElementById("dishPrice").value);
-      const dishAvailability =
-        document.getElementById("dishAvailability").value;
-      const dishDescription = document
-        .getElementById("dishDescription")
-        .value.trim();
-      const dishImageInput = document.getElementById("dishImage");
-      const vegetarian = document.getElementById("vegetarian").checked;
-      const nonveg = document.getElementById("nonveg").checked;
-=======
       const name = document.getElementById("dishName").value.trim();
       const price = parseFloat(document.getElementById("dishPrice").value);
       const description = document.getElementById("dishDescription").value.trim();
@@ -48,21 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Please fill in all required fields correctly.");
         return;
       }
->>>>>>> 2d19e147c772ec1df34145e58de579858ca3e1e9
 
       const formData = new FormData();
-<<<<<<< HEAD
-      formData.append("name", dishName);
-      formData.append("category", dishCategory);
-      formData.append("price", dishPrice);
-      formData.append("availability", dishAvailability);
-      formData.append("description", dishDescription);
-      formData.append("vegetarian", vegetarian);
-      formData.append("nonveg", nonveg);
-
-      if (dishImageInput.files.length > 0) {
-        formData.append("image", dishImageInput.files[0]);
-=======
       formData.append("name", name);
       formData.append("price", price);
       formData.append("description", description);
@@ -70,7 +44,6 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.append("availability", availability);
       if (imageFile) {
         formData.append("image", imageFile);
->>>>>>> 2d19e147c772ec1df34145e58de579858ca3e1e9
       }
 
       try {

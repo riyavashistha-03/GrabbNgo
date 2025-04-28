@@ -8,6 +8,8 @@ const dishSchema = new mongoose.Schema({
     description: { type: String },
     imageUrl: { type: String },
     vegetarian: { type: Boolean, default: false },
+    vegan: { type: Boolean, default: false },
+    glutenFree: { type: Boolean, default: false },
     averageRating: { type: Number, default: 0 },
     ratingCount: { type: Number, default: 0 }
 }, { timestamps: true });

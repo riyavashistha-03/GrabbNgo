@@ -8,27 +8,16 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Font Awesome 6.4.0 -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- AOS Animation -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link href="dashboard.css" rel="stylesheet" />
-  
-  <style>
-    /* Dark mode CSS variables */
-    .dark-mode {
-      --bs-body-bg: #1a1a2e !important;
-      --bs-body-color: #f8f9fa !important;
-      --bs-card-bg: #16213e !important;
-      background-color: var(--bs-body-bg) !important;
-      color: var(--bs-body-color) !important;
-    }
-    .dark-mode .card {
-      background-color: var(--bs-card-bg) !important;
-      color: var(--bs-body-color) !important;
-    }
-  </style>
 </head>
 <body class="staff-dashboard">
   <div class="d-flex" id="wrapper">
     <!-- Sidebar -->
-    <nav id="sidebar" class="bg-dark text-light border-end" style="min-width: 250px;">
+    <nav id="sidebar" class="bg-dark text-light border-end">
       <div class="sidebar-header p-3 border-bottom d-flex justify-content-between align-items-center">
         <div>
           <h2 class="h4 text-warning">GrabNGo</h2>
@@ -208,11 +197,132 @@
 
   <div id="notifications" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;"></div>
 
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- AOS Animation -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <!-- Custom JS -->
+  <script src="../js/staff.js"></script>
   <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize AOS animations
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true
+    });
+
+    // Function to fetch and update stats
+    async function updateStats() {
+      try {
+        const response = await fetch('../api/stats.php');
+        const data = await response.json();
+        
+        document.getElementById('menuItemsCount').textContent = data.menuItems || '0';
+        document.getElementById('todayOrders').textContent = data.todayOrders || '0';
+        document.getElementById('activeUsers').textContent = data.activeUsers || '0';
+        document.getElementById('todayRevenue').textContent = `$${data.todayRevenue || '0'}`;
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    }
+
+    // Function to fetch and update recent orders
+    async function updateRecentOrders() {
+      try {
+        const response = await fetch('../api/recent-orders.php');
+        const orders = await response.json();
+        
+        const ordersTable = document.querySelector('.orders-table tbody');
+        ordersTable.innerHTML = ''; // Clear existing rows
+        
+        orders.forEach(order => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${order.order_id}</td>
+            <td>${order.customer_name}</td>
+            <td>${order.items_count}</td>
+            <td>$${order.total_amount}</td>
+            <td><span class="badge ${getStatusBadgeClass(order.status)}">${order.status}</span></td>
+            <td><button class="btn btn-sm btn-outline-primary view-order-btn" data-order-id="${order.order_id}">View</button></td>
+          `;
+          ordersTable.appendChild(row);
+        });
+
+        // Add click handlers for view buttons
+        document.querySelectorAll('.view-order-btn').forEach(button => {
+          button.addEventListener('click', (e) => {
+            const orderId = e.target.dataset.orderId;
+            window.location.href = `order.html?order=${orderId}`;
+          });
+        });
+      } catch (error) {
+        console.error('Error fetching recent orders:', error);
+      }
+    }
+
+    // Function to fetch and update popular dishes
+    async function updatePopularDishes() {
+      try {
+        const response = await fetch('../api/popular-dishes.php');
+        const dishes = await response.json();
+        
+        const dishesGrid = document.querySelector('.dishes-grid');
+        dishesGrid.innerHTML = ''; // Clear existing dishes
+        
+        dishes.forEach(dish => {
+          const col = document.createElement('div');
+          col.className = 'col';
+          col.innerHTML = `
+            <div class="card h-100 dish-card" data-aos="fade-up">
+              <img src="${dish.image_url}" class="card-img-top" alt="${dish.name}" style="height: 180px; object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title">${dish.name}</h5>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="text-muted">$${dish.price}</span>
+                  <span class="badge bg-warning">${dish.order_count} orders</span>
+                </div>
+              </div>
+            </div>
+          `;
+          dishesGrid.appendChild(col);
+        });
+      } catch (error) {
+        console.error('Error fetching popular dishes:', error);
+      }
+    }
+
+    // Function to check for new orders
+    async function checkNewOrders() {
+      try {
+        const response = await fetch('../api/check-new-orders.php');
+        const data = await response.json();
+        
+        if (data.hasNewOrders) {
+          showNotification(`New order received! Order #${data.latestOrderId}`, "success");
+          updateNotificationBadge(data.newOrdersCount);
+          updateRecentOrders(); // Refresh the orders table
+          updateStats(); // Update the stats
+        }
+      } catch (error) {
+        console.error('Error checking for new orders:', error);
+      }
+    }
+
     // Dark/Light Mode Toggle
     const toggleDarkMode = () => {
       document.body.classList.toggle("dark-mode");
       localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+      updateDarkModeIcon();
+    };
+
+    const updateDarkModeIcon = () => {
+      const icon = document.querySelector('#darkModeToggle i');
+      if (document.body.classList.contains("dark-mode")) {
+        icon.classList.replace('fa-moon', 'fa-sun');
+      } else {
+        icon.classList.replace('fa-sun', 'fa-moon');
+      }
     };
 
     document.getElementById("darkModeToggle").addEventListener("click", toggleDarkMode);
@@ -221,6 +331,7 @@
     if (localStorage.getItem("darkMode") === "true") {
       document.body.classList.add("dark-mode");
     }
+    updateDarkModeIcon();
 
     // Real-Time Notifications
     function showNotification(message, type = "info") {
@@ -239,13 +350,68 @@
       setTimeout(() => toast.remove(), 5000);
     }
 
-    // Example usage of showNotification
-    // showNotification("Welcome to the dashboard!", "success");
+    function updateNotificationBadge(count) {
+      const badge = document.getElementById('notificationBadge');
+      if (count > 0) {
+        badge.style.display = 'block';
+        badge.textContent = count;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
 
+    function getStatusBadgeClass(status) {
+      switch(status.toLowerCase()) {
+        case 'preparing': return 'bg-info';
+        case 'ready': return 'bg-success';
+        case 'delivered': return 'bg-secondary';
+        default: return 'bg-warning text-dark';
+      }
+    }
+
+    // Quick Action Buttons Functionality
+    document.querySelector('.btn-success').addEventListener('click', () => {
+      window.location.href = 'order.html?action=new';
+    });
+
+    document.querySelector('.btn-primary').addEventListener('click', () => {
+      window.location.href = 'settings.html?tab=staff';
+    });
+
+    document.querySelector('.btn-warning').addEventListener('click', () => {
+      window.location.href = 'reports.html';
+    });
+
+    // Notification Bell Click Handler
+    document.querySelector('.fa-bell').addEventListener('click', () => {
+      showNotification("No new notifications", "info");
+      updateNotificationBadge(0);
+    });
+
+    // Staff Name Update
+    const staffName = localStorage.getItem('staffName') || 'Admin';
+    document.getElementById('staffName').textContent = staffName;
+
+    // Logout Button Functionality
+    document.querySelector('.sidebar-footer a').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('staffName');
+      window.location.href = '../index.html';
+    });
+
+    // Initial data load
+    updateStats();
+    updateRecentOrders();
+    updatePopularDishes();
+
+    // Set up real-time updates
+    setInterval(() => {
+      checkNewOrders();
+    }, 30000); // Check every 30 seconds
+
+    // Also check immediately
+    checkNewOrders();
+  });
   </script>
-
-  <script src="../js/staff.js"></script>
-  <!-- Bootstrap 5 JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

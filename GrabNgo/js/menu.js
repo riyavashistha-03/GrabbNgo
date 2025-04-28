@@ -18,403 +18,458 @@ function createButton(text, variant = 'primary', props = {}) {
 document.addEventListener("DOMContentLoaded", function () {
   // DOM Elements
   const menuItemsContainer = document.querySelector(".menu-items-grid");
-  const categoryFilters = document.querySelectorAll(".categories li");
-  const checkboxes = document.querySelectorAll(".filter-option input");
-  const sortSelect = document.getElementById("sortBy");
-  const searchInput = document.querySelector(".search-box input");
-  const searchButton = document.querySelector(".search-box button");
+  const categoryButtons = document.querySelectorAll(".category-filter .btn");
+  const dietaryFilters = document.querySelectorAll(".dietary-filter input");
   const cartCount = document.querySelector(".cart-count");
   const cartItemsContainer = document.querySelector(".cart-items");
-  const subtotalElement = document.querySelector(".subtotal");
-  const taxElement = document.querySelector(".tax");
-  const totalElement = document.querySelector(".total-amount");
-  const checkoutButton = document.querySelector(".btn-checkout");
-  const cartSidebar = document.querySelector(".cart-sidebar");
-  const cartOverlay = document.querySelector(".cart-overlay");
-  const closeCartButton = document.querySelector(".btn-close-cart");
-  const cartLink = document.querySelector('a[href="#"]'); // Update selector if needed
-  const canteenRadios = document.querySelectorAll('input[name="canteen"]');
+  const cartTotalElement = document.getElementById("cartTotal");
+  const checkoutButton = document.getElementById("checkoutButton");
+  const floatingCart = document.querySelector(".floating-cart");
+  const profileDropdown = document.querySelector(".profile-dropdown");
+  const profileButton = document.getElementById("dropdownMenuButton");
 
-  // Cart state
+  // Profile Elements
+  const userProfileImg = document.getElementById("userProfileImg");
+  const userName = document.getElementById("userName");
+  const profileImgContainer = document.querySelector(".profile-img-container");
+  const profilePhotoModal = new bootstrap.Modal(document.getElementById("profilePhotoModal"));
+  const profilePhotoInput = document.getElementById("profilePhotoInput");
+  const previewProfileImg = document.getElementById("previewProfileImg");
+  const saveProfilePhotoBtn = document.getElementById("saveProfilePhotoBtn");
+  const editProfileModal = new bootstrap.Modal(document.getElementById("editProfileModal"));
+  const editProfileBtn = document.getElementById("editProfileBtn");
+  const editProfileForm = document.getElementById("editProfileForm");
+  const saveProfileBtn = document.getElementById("saveProfileBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  // State
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  let selectedCanteen = "A block";
+  let menuItems = [];
+  let userData = null;
 
-  // Loading spinner element
-  const spinnerContainer = document.createElement("div");
-  spinnerContainer.className = "spinner-container";
-  spinnerContainer.style.display = "none";
-  spinnerContainer.innerHTML = '<div class="loading-spinner"></div>';
-  document.body.appendChild(spinnerContainer);
-
-  // Show spinner
-  function showSpinner() {
-    spinnerContainer.style.display = "flex";
-  }
-
-  // Hide spinner
-  function hideSpinner() {
-    spinnerContainer.style.display = "none";
-  }
-
-  // Initialize page
-  showSpinner();
+  // Initialize
+  fetchUserData();
   fetchMenuItems();
   updateCartCount();
   renderCartItems();
 
   // Event Listeners
-  categoryFilters.forEach(filter => {
-    filter.addEventListener("click", () => {
-      categoryFilters.forEach(f => f.classList.remove("active"));
-      filter.classList.add("active");
+  categoryButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      categoryButtons.forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
       filterMenuItems();
     });
   });
 
-  checkboxes.forEach(checkbox => checkbox.addEventListener("change", filterMenuItems));
-  sortSelect.addEventListener("change", sortMenuItems);
-  searchButton.addEventListener("click", searchMenuItems);
-  searchInput.addEventListener("keyup", e => { if (e.key === "Enter") searchMenuItems(); });
+  dietaryFilters.forEach(filter => {
+    filter.addEventListener("change", filterMenuItems);
+  });
 
-  let searchTimeoutVar = null;
-  function searchMenuItems() {
-    clearTimeout(searchTimeoutVar);
-    searchTimeoutVar = setTimeout(() => {
-      const searchTerm = searchInput.value.trim().toLowerCase();
-      document.querySelectorAll(".menu-item").forEach(item => {
-        const name = item.querySelector("h3").textContent.toLowerCase();
-        const desc = item.querySelector(".item-description").textContent.toLowerCase();
-        item.style.display = (name.includes(searchTerm) || desc.includes(searchTerm)) ? "flex" : "none";
-      });
-    }, 300);
+  // Profile Dropdown
+  if (profileButton) {
+    profileButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+
+    document.addEventListener("click", () => {
+      const dropdown = document.querySelector(".dropdown-menu");
+      if (dropdown && dropdown.classList.contains("show")) {
+        dropdown.classList.remove("show");
+      }
+    });
   }
 
-
-  if (cartLink) cartLink.addEventListener("click", e => { e.preventDefault(); openCart(); });
-  if (closeCartButton) closeCartButton.addEventListener("click", closeCart);
-  if (cartOverlay) cartOverlay.addEventListener("click", closeCart);
-
-  if (checkoutButton) {
-    checkoutButton.addEventListener("click", () => {
-      if (cart.length === 0) {
-        alert("Your cart is empty!");
+  // Profile Functions
+  async function fetchUserData() {
+    try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        window.location.href = "../auth/login.html";
         return;
       }
-      localStorage.setItem("checkoutCart", JSON.stringify(cart));
-      window.location.href = "payment.html";
-    });
+
+      const response = await fetch("http://localhost:5000/api/user/profile", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch user data");
+      
+      userData = await response.json();
+      updateProfileDisplay();
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      showError("Failed to load profile. Please try again later.");
+    }
   }
 
-  canteenRadios.forEach(radio => {
-    radio.addEventListener("change", () => {
-      selectedCanteen = radio.value;
-      filterMenuItems();
-    });
+  function updateProfileDisplay() {
+    if (!userData) return;
+
+    userName.textContent = userData.fullName || "User";
+    userProfileImg.src = userData.profilePhoto || "../images/default-profile.png";
+    previewProfileImg.src = userData.profilePhoto || "../images/default-profile.png";
+  }
+
+  // Profile Photo Change
+  profileImgContainer.addEventListener("click", () => {
+    profilePhotoModal.show();
+  });
+
+  profilePhotoInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        document.getElementById("photoError").textContent = "Image size should be less than 5MB";
+        document.getElementById("photoError").classList.remove("d-none");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewProfileImg.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      document.getElementById("photoError").classList.add("d-none");
+    }
+  });
+
+  saveProfilePhotoBtn.addEventListener("click", async () => {
+    const file = profilePhotoInput.files[0];
+    if (!file) {
+      document.getElementById("photoError").textContent = "Please select a photo";
+      document.getElementById("photoError").classList.remove("d-none");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("profilePhoto", file);
+
+      const response = await fetch("http://localhost:5000/api/user/profile/photo", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) throw new Error("Failed to update profile photo");
+
+      const data = await response.json();
+      userData.profilePhoto = data.profilePhoto;
+      updateProfileDisplay();
+      profilePhotoModal.hide();
+      showSuccess("Profile photo updated successfully");
+    } catch (error) {
+      console.error("Error updating profile photo:", error);
+      document.getElementById("photoError").textContent = "Failed to update profile photo";
+      document.getElementById("photoError").classList.remove("d-none");
+    }
+  });
+
+  // Edit Profile
+  editProfileBtn.addEventListener("click", () => {
+    if (!userData) return;
+
+    document.getElementById("editFullName").value = userData.fullName || "";
+    document.getElementById("editEmail").value = userData.email || "";
+    document.getElementById("editPhone").value = userData.phone || "";
+    editProfileModal.show();
+  });
+
+  saveProfileBtn.addEventListener("click", async () => {
+    const formData = {
+      fullName: document.getElementById("editFullName").value,
+      email: document.getElementById("editEmail").value,
+      phone: document.getElementById("editPhone").value
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/api/user/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) throw new Error("Failed to update profile");
+
+      userData = { ...userData, ...formData };
+      updateProfileDisplay();
+      editProfileModal.hide();
+      showSuccess("Profile updated successfully");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      document.getElementById("profileError").textContent = "Failed to update profile";
+      document.getElementById("profileError").classList.remove("d-none");
+    }
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("authToken");
+    window.location.href = "../auth/login.html";
   });
 
   // Fetch menu items from backend
   async function fetchMenuItems() {
     try {
-      const response = await fetch("http://localhost:5000/api/dishes");
-      if (!response.ok) throw new Error("Failed to fetch menu items");
-      const menuItems = await response.json();
+      console.log('Starting to fetch menu items...');
+      const token = localStorage.getItem('authToken');
+      console.log('Auth token:', token ? 'Present' : 'Missing');
+      
+      const response = await fetch('http://localhost:5000/api/dishes', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      console.log('Response status:', response.status);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch menu items: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('Menu items fetched successfully:', data);
+      menuItems = data;
       renderMenuItems(menuItems);
     } catch (error) {
-      console.error("Error fetching menu items:", error);
+      console.error('Error fetching menu items:', error);
+      showError('Failed to load menu items. Please try again later.');
     }
   }
 
-  // Render menu items and attach add to cart listeners
-  function renderMenuItems(menuItems) {
-    if (!menuItemsContainer) return;
-    menuItemsContainer.innerHTML = "";
-    menuItems.forEach(item => {
-      if (item.price == null) {
-        console.warn(`Dish ${item.name} missing price, skipping.`);
-        return;
-      }
-      const itemElement = document.createElement("div");
-      itemElement.className = "menu-item";
-      itemElement.dataset.id = item._id || item.id;
-      itemElement.dataset.category = item.category || "";
-      itemElement.dataset.vegetarian = item.vegetarian ? "true" : "false";
-      itemElement.dataset.canteen = item.canteen || "A block";
+  // Render menu items
+  function renderMenuItems(items) {
+    console.log('Starting to render menu items...');
+    const menuItemsGrid = document.querySelector('.menu-items-grid');
+    console.log('Menu items grid element:', menuItemsGrid);
+    
+    if (!menuItemsGrid) {
+      console.error('Menu items grid container not found');
+      return;
+    }
 
-      let imageUrl = item.imageUrl || "../images/default-dish.jpg";
-      if (imageUrl && !imageUrl.startsWith("http")) {
-        imageUrl = `http://localhost:5000/${imageUrl.startsWith("/") ? imageUrl.substring(1) : imageUrl}`;
-      }
+    console.log('Number of items to render:', items.length);
+    menuItemsGrid.innerHTML = '';
+    
+    items.forEach((item, index) => {
+      console.log(`Rendering item ${index + 1}:`, item);
+      const itemElement = document.createElement('div');
+      itemElement.className = 'menu-item';
+      itemElement.dataset.category = item.category;
+      itemElement.dataset.vegetarian = item.vegetarian;
+      itemElement.dataset.vegan = item.vegan;
+      itemElement.dataset.glutenFree = item.glutenFree;
 
-      // Create inner elements
-      const imageDiv = document.createElement("div");
-      imageDiv.className = "item-image";
-      const img = document.createElement("img");
-      img.src = imageUrl;
-      img.alt = item.name;
-      img.loading = "lazy";
-      img.width = 300;
-      img.height = 200;
-      imageDiv.appendChild(img);
+      const imageUrl = item.imageUrl || '../images/default-dish.jpg';
+      console.log(`Item ${index + 1} image URL:`, imageUrl);
 
-      const detailsDiv = document.createElement("div");
-      detailsDiv.className = "item-details";
+      itemElement.innerHTML = `
+        <div class="menu-item-img">
+          <img src="${imageUrl}" alt="${item.name}" onerror="this.src='../images/default-dish.jpg'">
+        </div>
+        <div class="menu-item-body">
+          <h3 class="menu-item-title">${item.name}</h3>
+          <p class="menu-item-description">${item.description || ''}</p>
+          <div class="menu-item-price">₹${item.price}</div>
+          <div class="menu-item-footer">
+            ${item.vegetarian ? '<span class="badge badge-veg">Veg</span>' : ''}
+            ${item.vegan ? '<span class="badge badge-vegan">Vegan</span>' : ''}
+            ${item.glutenFree ? '<span class="badge badge-gluten">GF</span>' : ''}
+            <button class="btn btn-add-to-cart" data-id="${item._id}">
+              <i class="fas fa-cart-plus"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+      `;
 
-      const h3 = document.createElement("h3");
-      h3.textContent = item.name;
-
-      const descP = document.createElement("p");
-      descP.className = "item-description";
-      descP.textContent = item.description || "";
-
-      const priceP = document.createElement("p");
-      priceP.className = "item-price";
-      priceP.textContent = `₹${item.price.toFixed(2)}`;
-
-      const ratingDiv = document.createElement("div");
-      ratingDiv.className = "item-rating";
-      ratingDiv.dataset.dishId = item._id;
-
-      const avgSpan = document.createElement("span");
-      avgSpan.className = "average-rating";
-      avgSpan.textContent = item.averageRating ? item.averageRating.toFixed(1) : "0.0";
-
-      const starsSpan = document.createElement("span");
-      starsSpan.className = "stars";
-      starsSpan.innerHTML = renderStars(item.averageRating);
-
-      const rateBtn = createButton("Rate", "rate");
-
-      ratingDiv.appendChild(avgSpan);
-      ratingDiv.appendChild(starsSpan);
-      ratingDiv.appendChild(rateBtn);
-
-      const addToCartBtn = createButton("Add to Cart", "add-to-cart");
-
-      detailsDiv.appendChild(h3);
-      detailsDiv.appendChild(descP);
-      detailsDiv.appendChild(priceP);
-      detailsDiv.appendChild(ratingDiv);
-      detailsDiv.appendChild(addToCartBtn);
-
-      itemElement.appendChild(imageDiv);
-      itemElement.appendChild(detailsDiv);
-
-      menuItemsContainer.appendChild(itemElement);
+      menuItemsGrid.appendChild(itemElement);
     });
-    attachAddToCartListeners();
-  }
 
-  // Attach event listeners to all add to cart buttons
-  function attachAddToCartListeners() {
-    menuItemsContainer.querySelectorAll(".btn-add-to-cart").forEach(button => {
-      button.addEventListener("click", () => {
-        const menuItem = button.closest(".menu-item");
-        addToCart(menuItem);
+    // Attach add to cart event listeners
+    document.querySelectorAll('.btn-add-to-cart').forEach(button => {
+      button.addEventListener('click', () => {
+        const itemId = button.dataset.id;
+        const item = menuItems.find(i => i._id === itemId);
+        if (item) {
+          addToCart(item);
+        }
       });
     });
   }
 
-  // Filter menu items based on category, vegetarian, and canteen
+  // Filter menu items
   function filterMenuItems() {
-    const activeCategory = document.querySelector(".categories li.active")?.dataset.category || "all";
-    const vegetarianChecked = document.getElementById("vegetarian")?.checked || false;
+    const activeCategory = document.querySelector(".category-filter .btn.active").dataset.category;
+    const vegetarianChecked = document.getElementById("vegetarianFilter").checked;
+    const veganChecked = document.getElementById("veganFilter").checked;
+    const glutenFreeChecked = document.getElementById("glutenFreeFilter").checked;
 
-    document.querySelectorAll(".menu-item").forEach(item => {
-      const categoryMatch = activeCategory === "all" || item.dataset.category === activeCategory;
-      const vegetarianMatch = !vegetarianChecked || item.dataset.vegetarian === "true";
-      const canteenMatch = item.dataset.canteen === selectedCanteen;
+    const filteredItems = menuItems.filter(item => {
+      const categoryMatch = activeCategory === "all" || item.category === activeCategory;
+      const vegetarianMatch = !vegetarianChecked || item.vegetarian;
+      const veganMatch = !veganChecked || item.vegan;
+      const glutenFreeMatch = !glutenFreeChecked || item.glutenFree;
 
-      item.style.display = (categoryMatch && vegetarianMatch && canteenMatch) ? "flex" : "none";
-    });
-  }
-
-  // Sort menu items by selected criteria
-  function sortMenuItems() {
-    const sortValue = sortSelect.value;
-    const items = Array.from(document.querySelectorAll(".menu-item"));
-    const menuContainer = menuItemsContainer;
-
-    items.sort((a, b) => {
-      switch (sortValue) {
-        case "price-asc":
-          return parsePrice(a) - parsePrice(b);
-        case "price-desc":
-          return parsePrice(b) - parsePrice(a);
-        case "name":
-          return a.querySelector("h3").textContent.localeCompare(b.querySelector("h3").textContent);
-        case "popular":
-        default:
-          return 0;
-      }
+      return categoryMatch && vegetarianMatch && veganMatch && glutenFreeMatch;
     });
 
-    items.forEach(item => menuContainer.appendChild(item));
+    renderMenuItems(filteredItems);
   }
 
-  // Helper to parse price from menu item element
-  function parsePrice(item) {
-    return parseFloat(item.querySelector(".item-price").textContent.replace("₹", "")) || 0;
-  }
-
-  // Search menu items by name or description with trimming and debounce
-  let searchTimeout = null;
-  function searchMenuItems() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-      const searchTerm = searchInput.value.trim().toLowerCase();
-      document.querySelectorAll(".menu-item").forEach(item => {
-        const name = item.querySelector("h3").textContent.toLowerCase();
-        const desc = item.querySelector(".item-description").textContent.toLowerCase();
-        item.style.display = (name.includes(searchTerm) || desc.includes(searchTerm)) ? "flex" : "none";
-      });
-    }, 300);
-  }
-
-  // Add item to cart or increase quantity if already present
-  function addToCart(menuItem) {
-    const id = menuItem.dataset.id;
-    const name = menuItem.querySelector("h3").textContent;
-    const price = parseFloat(menuItem.querySelector(".item-price").textContent.replace("₹", ""));
-    const image = menuItem.querySelector(".item-image img").src;
-
-    const existing = cart.find(item => item.id === id);
-    if (existing) {
-      existing.quantity += 1;
+  // Cart functions
+  function addToCart(item) {
+    const existingItem = cart.find(i => i._id === item._id);
+    if (existingItem) {
+      existingItem.quantity += 1;
     } else {
-      cart.push({ id, name, price, image, quantity: 1 });
+      cart.push({ ...item, quantity: 1 });
     }
+    updateCart();
+    showAddToCartConfirmation(item.name);
+  }
 
+  function updateCart() {
     localStorage.setItem("cart", JSON.stringify(cart));
     updateCartCount();
     renderCartItems();
-    showAddToCartConfirmation(name);
   }
 
-  // Update cart item count display
   function updateCartCount() {
     const total = cart.reduce((sum, item) => sum + item.quantity, 0);
     cartCount.textContent = total;
   }
 
-  // Render cart items in sidebar
   function renderCartItems() {
+    if (!cartItemsContainer) return;
+    cartItemsContainer.innerHTML = "";
+
     if (cart.length === 0) {
-      cartItemsContainer.innerHTML = `
-        <div class="empty-cart">
-          <i class="fas fa-shopping-cart"></i>
-          <p>Your cart is empty</p>
-        </div>`;
-      subtotalElement.textContent = "₹0.00";
-      taxElement.textContent = "₹0.00";
-      totalElement.textContent = "₹0.00";
+      cartItemsContainer.innerHTML = "<p class='text-center'>Your cart is empty</p>";
+      cartTotalElement.textContent = "0";
       return;
     }
 
-    let subtotal = 0;
-    let cartHTML = "";
-
+    let total = 0;
     cart.forEach(item => {
-      subtotal += item.price * item.quantity;
-      cartHTML += `
-        <div class="cart-item" data-id="${item.id}">
-          <div class="cart-item-image">
-            <img src="${item.image}" alt="${item.name}">
-          </div>
-          <div class="cart-item-details">
-            <h4>${item.name}</h4>
-            <p>₹${item.price.toFixed(2)}</p>
-            <div class="cart-item-quantity">
-              <button class="btn-quantity btn-decrease"><i class="fas fa-minus"></i></button>
-              <span>${item.quantity}</span>
-              <button class="btn-quantity btn-increase"><i class="fas fa-plus"></i></button>
-            </div>
-          </div>
-          <div class="cart-item-remove">
-            <button class="btn-remove"><i class="fas fa-trash"></i></button>
-          </div>
-        </div>`;
+      const itemTotal = item.price * item.quantity;
+      total += itemTotal;
+
+      const cartItem = document.createElement("div");
+      cartItem.className = "cart-item";
+      cartItem.innerHTML = `
+        <div class="cart-item-details">
+          <h5>${item.name}</h5>
+          <p>₹${item.price} x ${item.quantity}</p>
+        </div>
+        <div class="cart-item-quantity">
+          <button class="btn-quantity" onclick="updateQuantity('${item._id}', ${item.quantity - 1})">-</button>
+          <span>${item.quantity}</span>
+          <button class="btn-quantity" onclick="updateQuantity('${item._id}', ${item.quantity + 1})">+</button>
+        </div>
+      `;
+      cartItemsContainer.appendChild(cartItem);
     });
 
-    // Tax removed as per user request
-    const total = subtotal;
+    cartTotalElement.textContent = total.toFixed(2);
+  }
 
-    cartItemsContainer.innerHTML = cartHTML;
-    subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
-    taxElement.textContent = `₹0.00`;
-    totalElement.textContent = `₹${total.toFixed(2)}`;
-
-    // Attach cart item buttons event listeners
-    cartItemsContainer.querySelectorAll(".btn-remove").forEach(button => {
-      button.addEventListener("click", () => {
-        const id = button.closest(".cart-item").dataset.id;
-        removeFromCart(id);
-      });
-    });
-
-    cartItemsContainer.querySelectorAll(".btn-decrease").forEach(button => {
-      button.addEventListener("click", () => {
-        const id = button.closest(".cart-item").dataset.id;
-        updateCartItemQuantity(id, -1);
-      });
-    });
-
-    cartItemsContainer.querySelectorAll(".btn-increase").forEach(button => {
-      button.addEventListener("click", () => {
-        const id = button.closest(".cart-item").dataset.id;
-        updateCartItemQuantity(id, 1);
-      });
+  // Helper functions
+  function showAddToCartConfirmation(itemName) {
+    const toast = document.createElement("div");
+    toast.className = "toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3";
+    toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", "assertive");
+    toast.setAttribute("aria-atomic", "true");
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">
+          ${itemName} added to cart!
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    toast.addEventListener("hidden.bs.toast", () => {
+      document.body.removeChild(toast);
     });
   }
 
-  // Remove item from cart
-  function removeFromCart(id) {
-    cart = cart.filter(item => item.id !== id);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount();
-    renderCartItems();
+  function showError(message) {
+    const toast = document.createElement("div");
+    toast.className = "toast align-items-center text-white bg-danger border-0 position-fixed bottom-0 end-0 m-3";
+    toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", "assertive");
+    toast.setAttribute("aria-atomic", "true");
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">
+          ${message}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    toast.addEventListener("hidden.bs.toast", () => {
+      document.body.removeChild(toast);
+    });
   }
 
-  // Update quantity of cart item
-  function updateCartItemQuantity(id, change) {
-    const item = cart.find(i => i.id === id);
+  function showSuccess(message) {
+    const toast = document.createElement("div");
+    toast.className = "toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3";
+    toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", "assertive");
+    toast.setAttribute("aria-atomic", "true");
+    toast.innerHTML = `
+      <div class="d-flex">
+        <div class="toast-body">
+          ${message}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    toast.addEventListener("hidden.bs.toast", () => {
+      document.body.removeChild(toast);
+    });
+  }
+
+  // Global functions for cart quantity updates
+  window.updateQuantity = function(itemId, newQuantity) {
+    const item = cart.find(i => i._id === itemId);
     if (!item) return;
 
-    item.quantity += change;
-    if (item.quantity <= 0) {
-      removeFromCart(id);
+    if (newQuantity <= 0) {
+      cart = cart.filter(i => i._id !== itemId);
     } else {
-      localStorage.setItem("cart", JSON.stringify(cart));
-      updateCartCount();
-      renderCartItems();
+      item.quantity = newQuantity;
     }
-  }
+    updateCart();
+  };
 
-  // Show confirmation popup when item added to cart
-  function showAddToCartConfirmation(name) {
-    const confirmation = document.createElement("div");
-    confirmation.className = "add-to-cart-confirmation";
-    confirmation.textContent = `Added ${name} to cart`;
-    document.body.appendChild(confirmation);
-
-    setTimeout(() => confirmation.classList.add("show"), 10);
-    setTimeout(() => {
-      confirmation.classList.remove("show");
-      setTimeout(() => confirmation.remove(), 300);
-    }, 2000);
-  }
-
-  // Open cart sidebar
-  function openCart() {
-    cartSidebar.classList.add("open");
-    cartOverlay.classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
-
-  // Close cart sidebar
-  function closeCart() {
-    cartSidebar.classList.remove("open");
-    cartOverlay.classList.remove("open");
-    document.body.style.overflow = "";
+  // Checkout button handler
+  if (checkoutButton) {
+    checkoutButton.addEventListener("click", () => {
+      if (cart.length === 0) {
+        showError("Your cart is empty!");
+        return;
+      }
+      // Redirect to checkout page
+      window.location.href = "checkout.html";
+    });
   }
 });
 
