@@ -1,4 +1,4 @@
-/* CSS for GrabNgo/signup.html */
+/* CSS for GrabNgo/forgot.html */
 
 :root {
   --color-dark-green: #283618;
@@ -158,30 +158,6 @@ body.vintage-auth {
   border-color: var(--color-orange);
 }
 
-.password-hint p {
-  font-size: 0.85rem;
-  color: var(--color-green);
-  margin-top: 0.25rem;
-}
-
-.form-group.terms {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: var(--color-dark-green);
-}
-
-.form-group.terms a {
-  color: var(--color-gold);
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.form-group.terms a:hover {
-  color: var(--color-orange);
-}
-
 .vintage-btn {
   background-color: var(--color-gold);
   color: var(--color-dark-green);
@@ -198,6 +174,12 @@ body.vintage-auth {
 .vintage-btn:hover {
   background-color: var(--color-orange);
   color: var(--color-light);
+}
+
+.recovery-message p {
+  color: var(--color-green);
+  font-weight: 600;
+  margin-top: 1rem;
 }
 
 @media (max-width: 768px) {

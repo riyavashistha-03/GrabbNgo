@@ -260,12 +260,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Image upload preview for dish form
     const dishImageInput = document.getElementById('dishImage');
-    const imageFileName = document.getElementById('imageFileName');
+    const previewImage = document.getElementById('previewImage');
+    const imagePlaceholder = document.getElementById('imagePlaceholder');
     
-    if (dishImageInput && imageFileName) {
+    if (dishImageInput && previewImage && imagePlaceholder) {
         dishImageInput.addEventListener('change', function() {
             if (this.files && this.files[0]) {
-                imageFileName.textContent = this.files[0].name;
+                const file = this.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    imagePlaceholder.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.src = '';
+                previewImage.style.display = 'none';
+                imagePlaceholder.style.display = 'block';
             }
         });
     }

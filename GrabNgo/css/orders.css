@@ -1,0 +1,160 @@
+/* CSS for GrabNgo/user/orders.html */
+
+:root {
+  --color-dark-green: #283618;
+  --color-green: #606C38;
+  --color-light: #FEFAE0;
+  --color-gold: #DDA15E;
+  --color-orange: #BC6C25;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.user-orders {
+  font-family: var(--font-family);
+  background-color: var(--color-light);
+  color: var(--color-dark-green);
+  margin: 0;
+  min-height: 100vh;
+}
+
+.user-header {
+  background-color: var(--color-green);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-light);
+}
+
+.user-header .logo h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+.user-header .logo span {
+  color: var(--color-gold);
+}
+
+.user-nav a {
+  color: var(--color-light);
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.user-nav a.active,
+.user-nav a:hover {
+  background-color: var(--color-gold);
+  color: var(--color-dark-green);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  cursor: pointer;
+}
+
+.user-profile img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-gold);
+}
+
+.user-profile span {
+  font-weight: 600;
+  color: var(--color-light);
+}
+
+.user-profile .dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--color-light);
+  border: 1px solid var(--color-green);
+  border-radius: 8px;
+  display: none;
+  flex-direction: column;
+  min-width: 150px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.user-profile:hover .dropdown {
+  display: flex;
+}
+
+.user-profile .dropdown a {
+  color: var(--color-dark-green);
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.user-profile .dropdown a:hover {
+  background-color: var(--color-green);
+  color: var(--color-light);
+}
+
+.orders-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.orders-container h2 {
+  color: var(--color-green);
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.order-item {
+  background-color: var(--color-light);
+  border: 2px solid var(--color-green);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--color-dark-green);
+}
+
+.order-item h3 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+}
+
+.order-item p {
+  margin: 0.25rem 0;
+}
+
+.order-item ul {
+  margin: 0.5rem 0 0 1.25rem;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.order-item ul li {
+  margin-bottom: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .user-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .orders-container {
+    margin: 1rem;
+  }
+}

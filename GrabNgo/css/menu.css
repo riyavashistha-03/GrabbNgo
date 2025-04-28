@@ -1,28 +1,28 @@
-/* Basic reset and typography */
-body, h1, h2, h3, h4, p, ul, li, div, nav, header, main, aside, button {
+/* CSS for GrabNgo/user/menu.html */
+
+:root {
+  --color-dark-green: #283618;
+  --color-green: #606C38;
+  --color-light: #FEFAE0;
+  --color-gold: #DDA15E;
+  --color-orange: #BC6C25;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.user-menu {
+  font-family: var(--font-family);
+  background-color: var(--color-light);
+  color: var(--color-dark-green);
   margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-ul {
-  list-style: none;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* User menu header */
 .user-header {
-  background-color: #283618;
-  color: white;
-  padding: 10px 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  background-color: var(--color-green);
+  color: var(--color-light);
+  padding: 1rem 2rem;
 }
 
 .user-header nav {
@@ -32,450 +32,323 @@ a {
 }
 
 .user-header .logo h1 {
-  font-weight: bold;
+  font-weight: 700;
   font-size: 1.8rem;
 }
 
 .user-header .logo span {
-  color: #dda15e;
+  color: var(--color-gold);
 }
 
 .user-nav a {
-  margin-left: 20px;
+  color: var(--color-light);
+  text-decoration: none;
+  margin-left: 1rem;
   font-weight: 600;
-  color: white;
-  display: inline-flex;
-  align-items: center;
+  transition: color 0.3s ease;
 }
 
-.user-nav a.active {
-  border-bottom: 2px solid #dda15e;
-}
-
-.user-nav a i {
-  margin-right: 6px;
+.user-nav a.active,
+.user-nav a:hover {
+  color: var(--color-orange);
 }
 
 .user-profile {
   position: relative;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  gap: 0.5rem;
   cursor: pointer;
-  margin-left: 20px;
 }
 
 .user-profile img {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  margin-right: 8px;
   object-fit: cover;
+  border: 2px solid var(--color-gold);
 }
 
-.user-profile #userName {
-  font-weight: 600;
-  color: white;
-}
-
-.user-profile .dropdown {
-  display: none;
+.dropdown {
   position: absolute;
-  top: 40px;
+  top: 100%;
   right: 0;
-  background: white;
-  color: #333;
-  border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  min-width: 150px;
-  z-index: 200;
+  background-color: var(--color-green);
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 8px 8px;
+  display: none;
   flex-direction: column;
+  min-width: 150px;
+  z-index: 10;
+}
+
+.dropdown a {
+  color: var(--color-light);
+  text-decoration: none;
+  padding: 0.5rem 0;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown a:hover {
+  background-color: var(--color-orange);
+  color: var(--color-light);
 }
 
 .user-profile:hover .dropdown {
   display: flex;
-  flex-direction: column;
 }
 
-.user-profile .dropdown a {
-  padding: 10px 15px;
-  color: #333;
-  font-weight: 500;
-  border-bottom: 1px solid #eee;
-}
-
-.user-profile .dropdown a:last-child {
-  border-bottom: none;
-}
-
-.user-profile .dropdown a:hover {
-  background-color: #283618;
-  color: white;
-}
-
-/* Main container */
 .menu-container {
-  display: flex;
-  min-height: calc(100vh - 60px);
-  background-color: #f9f9f9;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 1.5rem;
+  padding: 2rem;
+  flex-grow: 1;
+  background-color: var(--color-light);
 }
 
-/* Sidebar */
 .menu-sidebar {
-  width: 250px;
-  background-color: white;
-  padding: 20px;
-  border-right: 1px solid #ddd;
+  background-color: var(--color-green);
+  color: var(--color-light);
+  padding: 1rem;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
-  z-index: 10; /* Added to prevent overlap */
+  gap: 1.5rem;
+}
+
+.menu-sidebar h3 {
+  margin-top: 0;
+  font-weight: 700;
+  color: var(--color-gold);
 }
 
 .search-box {
   display: flex;
-  margin-bottom: 40px; /* Increased margin to prevent overlap */
+  gap: 0.5rem;
 }
 
 .search-box input {
   flex-grow: 1;
-  padding: 8px 0px;
-  border: 1px solid #ccc;
-  border-radius: 4px 0 0 4px;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: none;
   font-size: 1rem;
 }
 
 .search-box button {
-  background-color: #283618;
+  background-color: var(--color-gold);
   border: none;
-  color: white;
-  padding: 8px 8px;
-  border-radius: 0 4px 4px 0;
+  border-radius: 8px;
+  padding: 0 1rem;
   cursor: pointer;
-  font-size: 1rem;
-}
-
-.categories h3,
-.filters h3 {
-  margin-bottom: 10px;
+  color: var(--color-dark-green);
   font-weight: 700;
-  color: #333;
-}
-
-.categories ul {
-  padding-left: 0;
-}
-
-.categories li {
-  padding: 8px 10px;
-  cursor: pointer;
-  border-radius: 4px;
-  color: #555;
-  margin-bottom: 6px;
   transition: background-color 0.3s ease;
 }
 
-.categories li.active,
-.categories li:hover {
-  background-color: #283618;
-  color: white;
+.search-box button:hover {
+  background-color: var(--color-orange);
+  color: var(--color-light);
 }
 
-.filter-option {
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-}
-
-.filter-option input[type="checkbox"] {
-  margin-right: 8px;
+.canteen-selection label,
+.categories ul li,
+.filters .filter-option {
+  display: block;
+  margin-bottom: 0.5rem;
   cursor: pointer;
+}
+
+.categories ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.categories ul li {
+  padding: 0.3rem 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.categories ul li.active,
+.categories ul li:hover {
+  background-color: var(--color-gold);
+  color: var(--color-dark-green);
+  font-weight: 700;
+}
+
+.filter-option input {
+  margin-right: 0.5rem;
 }
 
 .quick-stats {
   margin-top: auto;
-  font-size: 0.9rem;
-  color: #666;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  gap: 0.5rem;
+  font-weight: 600;
 }
 
 .stat-item i {
-  margin-right: 8px;
-  color: #283618;
+  color: var(--color-gold);
+  font-size: 1.2rem;
 }
 
-/* Menu content */
 .menu-content {
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
+  background-color: var(--color-light);
+  padding: 1rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .menu-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .menu-header h2 {
-  font-weight: 700;
-  color: #333;
+  margin: 0;
+  color: var(--color-dark-green);
 }
 
 .sort-options select {
-  padding: 6px 10px;
-  font-size: 1rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-green);
+  font-weight: 600;
+  background-color: var(--color-light);
+  color: var(--color-dark-green);
 }
 
-/* Menu items grid */
 .menu-items-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
 }
 
-/* Menu item */
-.menu-item {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease;
-}
-
-.menu-item:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.item-image img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-}
-
-.item-details {
-  padding: 15px;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.item-details h3 {
-  font-size: 1.2rem;
-  margin-bottom: 8px;
-  color: #333;
-}
-
-.item-description {
-  flex-grow: 1;
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 10px;
-}
-
-.item-price {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: #283618;
-  margin-bottom: 10px;
-}
-
-/* Add to cart button */
-.btn-add-to-cart {
-  background-color: #283618;
-  border: none;
-  color: white;
-  padding: 10px 0;
-  font-weight: 700;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-add-to-cart:hover {
-  background-color: #dda15e;
-}
-
-/* Rate button */
-.btn-rate {
-  background-color: #dda15e;
-  border: none;
-  color: white;
-  padding: 6px 12px;
-  font-weight: 600;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-left: 10px;
-  margin-bottom: 3px;
-  font-size: 0.9rem;
-}
-
-.btn-rate:hover {
-  background-color: #283618;
-}
-
-/* Cart sidebar */
 .cart-sidebar {
   position: fixed;
   top: 0;
-  right: -400px;
-  width: 350px;
-  height: 100%;
-  background-color: white;
-  box-shadow: -2px 0 8px rgba(0,0,0,0.2);
-  transition: right 0.3s ease;
-  z-index: 1100;
+  right: 0;
+  background-color: var(--color-light);
+  padding: 1rem;
+  border-left: 4px solid var(--color-gold);
+  width: 300px;
+  height: 100vh;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+  z-index: 1000;
 }
 
-.cart-sidebar.open {
-  right: 0;
+.cart-sidebar.show {
+  transform: translateX(0);
 }
 
 .cart-header {
-  padding: 15px 20px;
-  border-bottom: 1px solid #ddd;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .cart-header h3 {
-  font-weight: 700;
-  color: #333;
+  margin: 0;
+  color: var(--color-dark-green);
 }
 
 .btn-close-cart {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  color: var(--color-dark-green);
   cursor: pointer;
-  color: #666;
 }
 
 .cart-items {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 15px 20px;
 }
 
 .empty-cart {
   text-align: center;
-  color: #999;
-  font-size: 1.1rem;
-  margin-top: 50px;
+  color: var(--color-green);
+  font-weight: 600;
 }
 
-.cart-item {
-  display: flex;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-}
-
-.cart-item-image img {
-  width: 70px;
-  height: 70px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 15px;
-}
-
-.cart-item-details {
-  flex-grow: 1;
-}
-
-.cart-item-details h4 {
-  font-size: 1rem;
-  margin-bottom: 5px;
-  color: #333;
-}
-
-.cart-item-details p {
-  font-weight: 700;
-  color: #606c38;
-  margin-bottom: 5px;
-}
-
-.cart-item-quantity {
-  display: flex;
-  align-items: center;
-}
-
-.btn-quantity {
-  background-color: #606c38;
-  border: none;
-  color: white;
-  padding: 4px 8px;
-  cursor: pointer;
-  border-radius: 4px;
-  margin: 0 5px;
-  font-size: 1rem;
-}
-
-.btn-remove {
-  background: none;
-  border: none;
-  color: #cc0000;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-
-/* Cart summary */
 .cart-summary {
-  padding: 15px 20px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--color-green);
+  padding-top: 1rem;
+  font-weight: 600;
+  color: var(--color-dark-green);
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
-  font-weight: 700;
-  color: #333;
+  margin-bottom: 0.5rem;
 }
 
 .summary-row.total {
+  font-weight: 700;
   font-size: 1.2rem;
 }
 
-/* Cart overlay */
+.btn-checkout {
+  width: 100%;
+  background-color: var(--color-gold);
+  border: none;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 700;
+  color: var(--color-dark-green);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-checkout:hover {
+  background-color: var(--color-orange);
+  color: var(--color-light);
+}
+
 .cart-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.4);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease;
-  z-index: 1050;
+  height: 100vh;
+  background-color: rgba(40, 54, 24, 0.5);
+  display: none;
+  z-index: 900;
 }
 
-.cart-overlay.open {
-  opacity: 1;
-  visibility: visible;
+.cart-overlay.show {
+  display: block;
 }
 
-/* Style for menu-sidebar canteen select options */
-.menu-sidebar {
-  /* container styles if needed */
-}
-
-/* Custom checkbox tick color inside menu-sidebar */
-.menu-sidebar input[type="checkbox"],
-.canteen-selection input[type="checkbox"],
-.canteen-selection input[type="radio"] {
-  accent-color: #283618; /* Indian dark green color for checkbox tick and radio dot */
+@media (max-width: 768px) {
+  .menu-container {
+    grid-template-columns: 1fr;
+  }
+  .cart-sidebar {
+    width: 100%;
+    height: 50vh;
+    bottom: 0;
+    top: auto;
+    border-left: none;
+    border-top: 4px solid var(--color-gold);
+  }
 }

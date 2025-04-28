@@ -1,4 +1,20 @@
 // User Menu JavaScript - Refactored for clarity and removal of redundancies
+import "../css/loading-spinner.css";
+
+function createButton(text, variant = 'primary', props = {}) {
+  const button = document.createElement('button');
+  button.className = `btn btn-${variant}`;
+  button.textContent = text;
+  Object.entries(props).forEach(([key, value]) => {
+    if (key.startsWith('on') && typeof value === 'function') {
+      button.addEventListener(key.substring(2).toLowerCase(), value);
+    } else {
+      button.setAttribute(key, value);
+    }
+  });
+  return button;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   // DOM Elements
   const menuItemsContainer = document.querySelector(".menu-items-grid");
@@ -23,7 +39,25 @@ document.addEventListener("DOMContentLoaded", function () {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
   let selectedCanteen = "A block";
 
+  // Loading spinner element
+  const spinnerContainer = document.createElement("div");
+  spinnerContainer.className = "spinner-container";
+  spinnerContainer.style.display = "none";
+  spinnerContainer.innerHTML = '<div class="loading-spinner"></div>';
+  document.body.appendChild(spinnerContainer);
+
+  // Show spinner
+  function showSpinner() {
+    spinnerContainer.style.display = "flex";
+  }
+
+  // Hide spinner
+  function hideSpinner() {
+    spinnerContainer.style.display = "none";
+  }
+
   // Initialize page
+  showSpinner();
   fetchMenuItems();
   updateCartCount();
   renderCartItems();
@@ -41,6 +75,20 @@ document.addEventListener("DOMContentLoaded", function () {
   sortSelect.addEventListener("change", sortMenuItems);
   searchButton.addEventListener("click", searchMenuItems);
   searchInput.addEventListener("keyup", e => { if (e.key === "Enter") searchMenuItems(); });
+
+  let searchTimeoutVar = null;
+  function searchMenuItems() {
+    clearTimeout(searchTimeoutVar);
+    searchTimeoutVar = setTimeout(() => {
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      document.querySelectorAll(".menu-item").forEach(item => {
+        const name = item.querySelector("h3").textContent.toLowerCase();
+        const desc = item.querySelector(".item-description").textContent.toLowerCase();
+        item.style.display = (name.includes(searchTerm) || desc.includes(searchTerm)) ? "flex" : "none";
+      });
+    }, 300);
+  }
+
 
   if (cartLink) cartLink.addEventListener("click", e => { e.preventDefault(); openCart(); });
   if (closeCartButton) closeCartButton.addEventListener("click", closeCart);
@@ -97,22 +145,60 @@ document.addEventListener("DOMContentLoaded", function () {
         imageUrl = `http://localhost:5000/${imageUrl.startsWith("/") ? imageUrl.substring(1) : imageUrl}`;
       }
 
-      itemElement.innerHTML = `
-        <div class="item-image">
-          <img src="${imageUrl}" alt="${item.name}" />
-        </div>
-        <div class="item-details">
-          <h3>${item.name}</h3>
-          <p class="item-description">${item.description || ""}</p>
-          <p class="item-price">₹${item.price.toFixed(2)}</p>
-          <div class="item-rating" data-dish-id="${item._id}">
-            <span class="average-rating">${item.averageRating ? item.averageRating.toFixed(1) : "0.0"}</span>
-            <span class="stars">${renderStars(item.averageRating)}</span>
-            <button class="btn btn-rate">Rate</button>
-          </div>
-          <button class="btn btn-add-to-cart">Add to Cart</button>
-        </div>
-      `;
+      // Create inner elements
+      const imageDiv = document.createElement("div");
+      imageDiv.className = "item-image";
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = item.name;
+      img.loading = "lazy";
+      img.width = 300;
+      img.height = 200;
+      imageDiv.appendChild(img);
+
+      const detailsDiv = document.createElement("div");
+      detailsDiv.className = "item-details";
+
+      const h3 = document.createElement("h3");
+      h3.textContent = item.name;
+
+      const descP = document.createElement("p");
+      descP.className = "item-description";
+      descP.textContent = item.description || "";
+
+      const priceP = document.createElement("p");
+      priceP.className = "item-price";
+      priceP.textContent = `₹${item.price.toFixed(2)}`;
+
+      const ratingDiv = document.createElement("div");
+      ratingDiv.className = "item-rating";
+      ratingDiv.dataset.dishId = item._id;
+
+      const avgSpan = document.createElement("span");
+      avgSpan.className = "average-rating";
+      avgSpan.textContent = item.averageRating ? item.averageRating.toFixed(1) : "0.0";
+
+      const starsSpan = document.createElement("span");
+      starsSpan.className = "stars";
+      starsSpan.innerHTML = renderStars(item.averageRating);
+
+      const rateBtn = createButton("Rate", "rate");
+
+      ratingDiv.appendChild(avgSpan);
+      ratingDiv.appendChild(starsSpan);
+      ratingDiv.appendChild(rateBtn);
+
+      const addToCartBtn = createButton("Add to Cart", "add-to-cart");
+
+      detailsDiv.appendChild(h3);
+      detailsDiv.appendChild(descP);
+      detailsDiv.appendChild(priceP);
+      detailsDiv.appendChild(ratingDiv);
+      detailsDiv.appendChild(addToCartBtn);
+
+      itemElement.appendChild(imageDiv);
+      itemElement.appendChild(detailsDiv);
+
       menuItemsContainer.appendChild(itemElement);
     });
     attachAddToCartListeners();
@@ -170,14 +256,18 @@ document.addEventListener("DOMContentLoaded", function () {
     return parseFloat(item.querySelector(".item-price").textContent.replace("₹", "")) || 0;
   }
 
-  // Search menu items by name or description
+  // Search menu items by name or description with trimming and debounce
+  let searchTimeout = null;
   function searchMenuItems() {
-    const searchTerm = searchInput.value.toLowerCase();
-    document.querySelectorAll(".menu-item").forEach(item => {
-      const name = item.querySelector("h3").textContent.toLowerCase();
-      const desc = item.querySelector(".item-description").textContent.toLowerCase();
-      item.style.display = (name.includes(searchTerm) || desc.includes(searchTerm)) ? "flex" : "none";
-    });
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      document.querySelectorAll(".menu-item").forEach(item => {
+        const name = item.querySelector("h3").textContent.toLowerCase();
+        const desc = item.querySelector(".item-description").textContent.toLowerCase();
+        item.style.display = (name.includes(searchTerm) || desc.includes(searchTerm)) ? "flex" : "none";
+      });
+    }, 300);
   }
 
   // Add item to cart or increase quantity if already present

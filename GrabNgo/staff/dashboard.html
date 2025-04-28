@@ -1,184 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Dashboard | GrabNGo</title>
-    <link rel="stylesheet" href="../css/staff.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Staff Dashboard | GrabNGo</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome 6.4.0 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <link href="dashboard.css" rel="stylesheet" />
+  
+  <style>
+    /* Dark mode CSS variables */
+    .dark-mode {
+      --bs-body-bg: #1a1a2e !important;
+      --bs-body-color: #f8f9fa !important;
+      --bs-card-bg: #16213e !important;
+      background-color: var(--bs-body-bg) !important;
+      color: var(--bs-body-color) !important;
+    }
+    .dark-mode .card {
+      background-color: var(--bs-card-bg) !important;
+      color: var(--bs-body-color) !important;
+    }
+  </style>
 </head>
 <body class="staff-dashboard">
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>GrabNGo</h2>
-                <p>Staff Dashboard</p>
+  <div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="bg-dark text-light border-end" style="min-width: 250px;">
+      <div class="sidebar-header p-3 border-bottom d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="h4 text-warning">GrabNGo</h2>
+          <p class="text-secondary mb-0">Staff Dashboard</p>
+        </div>
+        <button id="darkModeToggle" class="btn btn-sm btn-outline-warning" title="Toggle Dark Mode">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+      <ul class="nav nav-pills flex-column mb-auto px-2">
+        <li class="nav-item">
+          <a href="dashboard.html" class="nav-link active text-warning d-flex align-items-center">
+            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="add-dish.html" class="nav-link text-light d-flex align-items-center">
+            <i class="fas fa-utensils me-2"></i> Manage Menu
+          </a>
+        </li>
+        <li>
+          <a href="order.html" class="nav-link text-light d-flex align-items-center">
+            <i class="fas fa-clipboard-list me-2"></i> Orders
+          </a>
+        </li>
+        <li>
+          <a href="reports.html" class="nav-link text-light d-flex align-items-center">
+            <i class="fas fa-chart-line me-2"></i> Reports
+          </a>
+        </li>
+        <li>
+          <a href="settings.html" class="nav-link text-light d-flex align-items-center">
+            <i class="fas fa-cog me-2"></i> Settings
+          </a>
+        </li>
+      </ul>
+      <div class="sidebar-footer p-3 border-top">
+        <a href="../index.html" class="btn btn-outline-warning w-100 d-flex align-items-center justify-content-center">
+          <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
+      </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper" class="flex-grow-1">
+      <header class="d-flex justify-content-between align-items-center p-3 border-bottom bg-white">
+        <div>
+          <h1 class="h3 mb-0">Dashboard</h1>
+          <p class="mb-0">Welcome back, <span id="staffName">Admin</span></p>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <div class="position-relative">
+            <i class="fas fa-bell fa-lg text-secondary" role="button" aria-label="Notifications"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge" style="display:none;">0</span>
+          </div>
+          <div>
+            <img src="../images/staff-avatar.jpg" alt="Staff Avatar" class="rounded-circle border border-3 border-secondary" style="width:48px; height:48px; object-fit:cover;" />
+          </div>
+        </div>
+      </header>
+
+      <main class="p-4">
+        <!-- Quick Action Shortcuts -->
+        <div class="quick-actions d-flex gap-2 mb-4">
+          <button class="btn btn-success"><i class="fas fa-plus"></i> New Order</button>
+          <button class="btn btn-primary"><i class="fas fa-users"></i> Manage Staff</button>
+          <button class="btn btn-warning"><i class="fas fa-chart-line"></i> Reports</button>
+        </div>
+
+        <!-- Quick Actions -->
+        <section class="mb-4">
+          <h3 class="mb-3">Quick Actions</h3>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="add-dish.html" class="btn btn-warning btn-lg d-flex align-items-center gap-2">
+              <i class="fas fa-plus"></i> Add New Dish
+            </a>
+            <a href="order.html" class="btn btn-outline-warning btn-lg d-flex align-items-center gap-2">
+              <i class="fas fa-eye"></i> View Recent Orders
+            </a>
+          </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <section class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4 mb-5">
+          <div class="col">
+            <div class="card shadow-sm h-100">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
+                  <i class="fas fa-utensils fa-2x"></i>
+                </div>
+                <div>
+                  <h5 class="card-title mb-1">Menu Items</h5>
+                  <p class="card-text fs-4 fw-bold" id="menuItemsCount"></p>
+                </div>
+              </div>
             </div>
-            
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="active">
-                        <a href="dashboard.html">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="add-dish.html">
-                            <i class="fas fa-utensils"></i>
-                            <span>Manage Menu</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="order.html">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Orders</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="reports.html">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="settings.html">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <a href="../index.html" class="btn btn-logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
+          </div>
+          <div class="col">
+            <div class="card shadow-sm h-100">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
+                  <i class="fas fa-clipboard-list fa-2x"></i>
+                </div>
+                <div>
+                  <h5 class="card-title mb-1">Today's Orders</h5>
+                  <p class="card-text fs-4 fw-bold" id="todayOrders"></p>
+                </div>
+              </div>
             </div>
-        </aside>
-        
-        <main class="main-content">
-            <header class="content-header">
-                <div class="header-left">
-                    <h1>Dashboard</h1>
-                    <p>Welcome back, <span id="staffName">Admin</span></p>
+          </div>
+          <div class="col">
+            <div class="card shadow-sm h-100">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
+                  <i class="fas fa-users fa-2x"></i>
                 </div>
-                <div class="header-right">
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge"></span>
-                    </div>
-                    <div class="user-profile">
-                        <img src="../images/staff-avatar.jpg" alt="Staff Avatar">
-                    </div>
+                <div>
+                  <h5 class="card-title mb-1">Active Users</h5>
+                  <p class="card-text fs-4 fw-bold" id="activeUsers"></p>
                 </div>
-            </header>
-            
-            <div class="dashboard-content">
-                <!-- Quick Actions Section -->
-                <div class="quick-actions">
-                    <h3>Quick Actions</h3>
-                <div class="action-buttons">
-                    <a href="add-dish.html" class="btn btn-action">
-                        <i class="fas fa-plus"></i> Add New Dish
-                    </a>
-                    <!-- Removed Quick Add Dish button to avoid duplication -->
-                    <a href="order.html" class="btn btn-action">
-                        <i class="fas fa-eye"></i> View Recent Orders
-                    </a>
-                </div>
-                </div>
-                
-                <!-- Stats Grid -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-utensils"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Menu Items</h3>
-                            <p id="menuItemsCount"></p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clipboard-list"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Today's Orders</h3>
-                            <p id="todayOrders"></p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Active Users</h3>
-                            <p id="activeUsers"></p>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-money-bill-wave"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>Today's Revenue</h3>
-                            <p id="todayRevenue"></p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Orders Table -->
-                <div class="recent-orders">
-                    <div class="section-header">
-                        <h2>Recent Orders</h2>
-                        <a href="order.html" class="btn btn-view-all">View All</a>
-                    </div>
-                    
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer</th>
-                                <th>Items</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- Popular Dishes Section -->
-                <div class="popular-dishes">
-                    <div class="section-header">
-                        <h2>Popular Dishes</h2>
-                        <a href="add-dish.html" class="btn btn-view-all">Manage Menu</a>
-                    </div>
-                    
-                <div class="dishes-grid">
-                </div>
-                </div>
+              </div>
             </div>
-        </main>
+          </div>
+          <div class="col">
+            <div class="card shadow-sm h-100">
+              <div class="card-body d-flex align-items-center gap-3">
+                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width:60px; height:60px;">
+                  <i class="fas fa-money-bill-wave fa-2x"></i>
+                </div>
+                <div>
+                  <h5 class="card-title mb-1">Today's Revenue</h5>
+                  <p class="card-text fs-4 fw-bold" id="todayRevenue"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent Orders Table -->
+        <section class="recent-orders mb-5">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Recent Orders</h2>
+            <a href="order.html" class="btn btn-outline-warning">View All</a>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle orders-table">
+              <thead class="table-light">
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Dynamic rows inserted here -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Popular Dishes Section -->
+        <section class="popular-dishes">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h4 mb-0">Popular Dishes</h2>
+            <a href="add-dish.html" class="btn btn-outline-warning">Manage Menu</a>
+          </div>
+          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 dishes-grid">
+            <!-- Dynamic dish cards inserted here -->
+          </div>
+        </section>
+      </main>
     </div>
+  </div>
 
-    <!-- Quick Add Dish Modal -->
-    <!-- Removed Quick Add Dish Modal to avoid duplication -->
+  <div id="notifications" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1100;"></div>
 
-    <script>
-        // Redirect to login if not authenticated
-        if (!localStorage.getItem('authToken')) {
-            window.location.href = '../login.html';
-        }
-    </script>
-    <script src="../js/staff.js"></script>
+  <script>
+    // Dark/Light Mode Toggle
+    const toggleDarkMode = () => {
+      document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+    };
+
+    document.getElementById("darkModeToggle").addEventListener("click", toggleDarkMode);
+
+    // Check user preference
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark-mode");
+    }
+
+    // Real-Time Notifications
+    function showNotification(message, type = "info") {
+      const toast = document.createElement("div");
+      toast.className = `toast show align-items-center text-white bg-${type} border-0`;
+      toast.setAttribute("role", "alert");
+      toast.setAttribute("aria-live", "assertive");
+      toast.setAttribute("aria-atomic", "true");
+      toast.innerHTML = `
+        <div class="d-flex">
+          <div class="toast-body">${message}</div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      `;
+      document.querySelector("#notifications").appendChild(toast);
+      setTimeout(() => toast.remove(), 5000);
+    }
+
+    // Example usage of showNotification
+    // showNotification("Welcome to the dashboard!", "success");
+
+  </script>
+
+  <script src="../js/staff.js"></script>
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

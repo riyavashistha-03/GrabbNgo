@@ -1,0 +1,208 @@
+/* CSS for GrabNgo/staff/dashboard.html */
+
+:root {
+  --color-dark-green: #283618;
+  --color-green: #606C38;
+  --color-light: #FEFAE0;
+  --color-gold: #DDA15E;
+  --color-orange: #BC6C25;
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.staff-dashboard {
+  font-family: var(--font-family);
+  background-color: var(--color-light);
+  color: var(--color-dark-green);
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+#sidebar {
+  background-color: var(--color-dark-green);
+  color: var(--color-light);
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.sidebar-header {
+  border-bottom: 1px solid var(--color-green);
+  margin-bottom: 1rem;
+}
+
+.sidebar-header h2 {
+  color: var(--color-gold);
+  margin: 0;
+}
+
+.sidebar-header p {
+  color: var(--color-light);
+  margin: 0;
+}
+
+.nav-pills .nav-link {
+  color: var(--color-light);
+  margin-bottom: 0.5rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .nav-link:hover {
+  background-color: var(--color-gold);
+  color: var(--color-dark-green);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--color-green);
+}
+
+.sidebar-footer a {
+  color: var(--color-gold);
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-footer a:hover {
+  color: var(--color-orange);
+}
+
+#page-content-wrapper {
+  flex-grow: 1;
+  background-color: var(--color-light);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  background-color: var(--color-green);
+  color: var(--color-light);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.quick-actions button {
+  border-radius: 0.375rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-success {
+  background-color: var(--color-gold);
+  border: none;
+  color: var(--color-dark-green);
+}
+
+.btn-success:hover {
+  background-color: var(--color-orange);
+  color: var(--color-light);
+}
+
+.btn-primary {
+  background-color: var(--color-green);
+  border: none;
+  color: var(--color-light);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-dark-green);
+}
+
+.btn-warning {
+  background-color: var(--color-orange);
+  border: none;
+  color: var(--color-light);
+}
+
+.btn-warning:hover {
+  background-color: var(--color-gold);
+  color: var(--color-dark-green);
+}
+
+section h3 {
+  color: var(--color-dark-green);
+  margin-bottom: 1rem;
+}
+
+.card {
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card-body {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.bg-warning {
+  background-color: var(--color-gold) !important;
+}
+
+.text-white {
+  color: var(--color-light) !important;
+}
+
+.popular-dishes .btn-outline-warning {
+  color: var(--color-orange);
+  border-color: var(--color-orange);
+}
+
+.popular-dishes .btn-outline-warning:hover {
+  background-color: var(--color-orange);
+  color: var(--color-light);
+}
+
+@media (max-width: 768px) {
+  #wrapper {
+    flex-direction: column;
+  }
+  #sidebar {
+    min-width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  #sidebar ul {
+    flex-direction: row;
+  }
+  #page-content-wrapper {
+    min-height: auto;
+  }
+  .quick-actions {
+    flex-direction: column;
+  }
+  section.row {
+    grid-template-columns: 1fr !important;
+  }
+}
