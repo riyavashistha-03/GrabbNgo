@@ -72,13 +72,262 @@
                     <label for="vegetarian">Vegetarian</label>
                 </div>
                 <div class="filter-option">
-                    <input type="checkbox" id="vegan" />
-                    <label for="vegan">Vegan</label>
+                    <input type="checkbox" id="nonveg" />
+                    <label for="nonveg">Non-vegetarian</label>
+                </div>```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Menu | GrabNGo</title>
+    <link rel="stylesheet" href="../css/menu.css" />
+    <link rel="stylesheet" href="../css/rating-popup.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* Additional styles for rating popup can be added here if needed */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .user-header {
+            background-color: #333;
+            color: #fff;
+            padding: 1em;
+            text-align: center;
+        }
+        .user-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .user-nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+        .user-profile {
+            position: relative;
+        }
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #333;
+            padding: 10px;
+            display: none;
+        }
+        .dropdown a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+        }
+        .dropdown a:hover {
+            background-color: #444;
+        }
+        .user-profile:hover .dropdown {
+            display: block;
+        }
+        .menu-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        .menu-sidebar {
+            width: 250px;
+            background-color: #f7f7f7;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        .menu-content {
+            width: calc(100% - 250px);
+            padding: 20px;
+        }
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .sort-options {
+            margin-left: 20px;
+        }
+        .menu-items-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+        }
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            width: 300px;
+            height: 100vh;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .cart-sidebar.show {
+            transform: translateX(0);
+        }
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+        .cart-overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body class="user-menu">
+    <header class="user-header">
+        <nav>
+            <div class="logo">
+                <h1>Grab<span>N</span>Go</h1>
+            </div>
+            <div class="user-nav">
+                <a href="menu.html" class="active"><i class="fas fa-utensils"></i> Menu</a>
+                <a href="#"><i class="fas fa-shopping-cart"></i> Cart <span class="cart-count">0</span></a>
+                <a href="orders.html"><i class="fas fa-history"></i> Orders</a>
+                <div class="user-profile">
+                    <img src="../images/delicious_img.jpg" alt="User Avatar" />
+                    <span id="userName">User</span>
+                    <div class="dropdown">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="../index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="menu-container">
+        <div class="menu-sidebar">
+            <div class="search-box">
+                <input type="text" placeholder="Search dishes..." />
+                <button><i class="fas fa-search"></i></button>
+            </div>
+
+            <div class="canteen-selection">
+                <h3>Select Canteen</h3>
+                <label>
+                    <input type="radio" name="canteen" value="A block" checked />
+                    A block
+                </label>
+                <label>
+                    <input type="radio" name="canteen" value="C block" />
+                    C block
+                </label>
+            </div>
+
+            <div class="categories">
+                <h3>Categories</h3>
+                <ul>
+                    <li class="active" data-category="all">All Items</li>
+                    <li data-category="breakfast">Breakfast</li>
+                    <li data-category="lunch">Lunch</li>
+                    <li data-category="dinner">Dinner</li>
+                    <li data-category="snacks">Snacks</li>
+                    <li data-category="beverages">Beverages</li>
+                </ul>
+            </div>
+
+            <div class="filters">
+                <h3>Filters</h3>
+                <div class="filter-option">
+                    <input type="checkbox" id="vegetarian" checked />
+                    <label for="vegetarian">Vegetarian</label>
                 </div>
                 <div class="filter-option">
-                    <input type="checkbox" id="gluten-free" />
-                    <label for="gluten-free">Gluten Free</label>
+                    <input type="checkbox" id="nonveg" />
+                    <label for="nonveg">Non-vegetarian</label>
                 </div>
+            </div>
+
+            <div class="quick-stats">
+                <div class="stat-item">
+                    <i class="fas fa-clock"></i>
+                    <p>Avg. Prep Time: <span>15 mins</span></p>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-utensils"></i>
+                    <p>Dishes Available: <span id="dishesCount">0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-content">
+            <div class="menu-header">
+                <h2>Today’s mood, today’s menu.</h2>
+                <div class="sort-options">
+                    <select id="sortBy">
+                        <option value="popular">Most Popular</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="name">Alphabetical</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="special-offers" style="display:none;">
+                <!-- Removed hardcoded special offers -->
+            </div>
+
+            <div class="menu-items-grid">
+                <!-- Menu items will be dynamically added here by JS -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Cart Sidebar -->
+    <aside class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Pick your plate – we’ll handle the rest.</h3>
+            <button class="btn-close-cart"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="cart-items">
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Your plate is empty</p>
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span class="subtotal">₹0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Other Charges</span>
+                <span class="tax">₹0.00</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span class="total-amount">₹0.00</span>
+            </div>
+
+            <button class="btn btn-checkout">Proceed to Checkout</button>
+        </div>
+    </aside>
+
+    <div class="cart-overlay"></div>
+
+    <script src="../js/menu.js"></script>
+</body>
+</html>
+```
             </div>
 
             <div class="quick-stats">

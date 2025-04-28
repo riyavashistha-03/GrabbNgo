@@ -24,8 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .value.trim();
       const dishImageInput = document.getElementById("dishImage");
       const vegetarian = document.getElementById("vegetarian").checked;
-      const vegan = document.getElementById("vegan").checked;
-      const glutenFree = document.getElementById("glutenFree").checked;
+      const nonveg = document.getElementById("nonveg").checked;
 
       // Prepare form data for image upload if needed
       const formData = new FormData();
@@ -35,8 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.append("availability", dishAvailability);
       formData.append("description", dishDescription);
       formData.append("vegetarian", vegetarian);
-      formData.append("vegan", vegan);
-      formData.append("glutenFree", glutenFree);
+      formData.append("nonveg", nonveg);
 
       if (dishImageInput.files.length > 0) {
         formData.append("image", dishImageInput.files[0]);
