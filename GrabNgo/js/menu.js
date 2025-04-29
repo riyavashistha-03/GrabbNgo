@@ -1,5 +1,4 @@
 // User Menu JavaScript - Refactored for clarity and removal of redundancies
-import "../css/loading-spinner.css";
 
 function createButton(text, variant = 'primary', props = {}) {
   const button = document.createElement('button');
@@ -246,61 +245,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Render menu items
   function renderMenuItems(items) {
-    console.log('Starting to render menu items...');
-    const menuItemsGrid = document.querySelector('.menu-items-grid');
-    console.log('Menu items grid element:', menuItemsGrid);
-    
-    if (!menuItemsGrid) {
-      console.error('Menu items grid container not found');
-      return;
-    }
-
-    console.log('Number of items to render:', items.length);
-    menuItemsGrid.innerHTML = '';
-    
-    items.forEach((item, index) => {
-      console.log(`Rendering item ${index + 1}:`, item);
-      const itemElement = document.createElement('div');
-      itemElement.className = 'menu-item';
-      itemElement.dataset.category = item.category;
-      itemElement.dataset.vegetarian = item.vegetarian;
-      itemElement.dataset.vegan = item.vegan;
-      itemElement.dataset.glutenFree = item.glutenFree;
-
-      const imageUrl = item.imageUrl || '../images/default-dish.jpg';
-      console.log(`Item ${index + 1} image URL:`, imageUrl);
-
-      itemElement.innerHTML = `
-        <div class="menu-item-img">
-          <img src="${imageUrl}" alt="${item.name}" onerror="this.src='../images/default-dish.jpg'">
-        </div>
-        <div class="menu-item-body">
-          <h3 class="menu-item-title">${item.name}</h3>
-          <p class="menu-item-description">${item.description || ''}</p>
-          <div class="menu-item-price">₹${item.price}</div>
-          <div class="menu-item-footer">
-            ${item.vegetarian ? '<span class="badge badge-veg">Veg</span>' : ''}
-            ${item.vegan ? '<span class="badge badge-vegan">Vegan</span>' : ''}
-            ${item.glutenFree ? '<span class="badge badge-gluten">GF</span>' : ''}
-            <button class="btn btn-add-to-cart" data-id="${item._id}">
-              <i class="fas fa-cart-plus"></i> Add to Cart
-            </button>
+    const menuItemsRow = document.getElementById('menu-items-row');
+    menuItemsRow.innerHTML = '';
+    items.forEach(item => {
+      const col = document.createElement('div');
+      col.className = 'col-md-4 mb-4';
+      col.innerHTML = `
+        <div class="card h-100">
+          <img src="${item.image || '../images/placeholder-image.jpg'}" class="card-img-top" alt="${item.name}">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">${item.name}</h5>
+            <p class="card-text">${item.description || ''}</p>
+            <div class="mt-auto">
+              <span class="badge bg-primary">₹${item.price}</span>
+              <button class="btn btn-success btn-sm float-end">Add to Cart</button>
+            </div>
           </div>
         </div>
       `;
-
-      menuItemsGrid.appendChild(itemElement);
-    });
-
-    // Attach add to cart event listeners
-    document.querySelectorAll('.btn-add-to-cart').forEach(button => {
-      button.addEventListener('click', () => {
-        const itemId = button.dataset.id;
-        const item = menuItems.find(i => i._id === itemId);
-        if (item) {
-          addToCart(item);
-        }
-      });
+      menuItemsRow.appendChild(col);
     });
   }
 
@@ -486,7 +449,7 @@ function renderStars(rating) {
 }
 
 // Event delegation for rate buttons
-document.querySelector(".menu-items-grid").addEventListener("click", function (event) {
+document.getElementById("menu-items-row").addEventListener("click", function (event) {
   if (event.target.classList.contains("btn-rate")) {
     const ratingContainer = event.target.closest(".item-rating");
     if (!ratingContainer) return;

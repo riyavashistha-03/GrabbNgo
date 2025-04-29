@@ -323,24 +323,45 @@
 }
 
 .menu-items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 30px;
-  padding: 20px 0;
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 2rem !important;
+  padding: 2rem 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.menu-items-grid.row,
+.menu-items-grid[class*="row"] {
+  display: grid !important;
+  flex-wrap: unset !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.menu-items-grid > .dish-card,
+.menu-items-grid > [class*="col"] {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: unset !important;
+  flex: unset !important;
 }
 
 /* Dish Card Styles */
 .dish-card {
-  width: 350px;
-  height: 350px;
-  margin: 0 auto;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid var(--dark-secondary);
-  border-radius: 8px;
-  overflow: hidden;
+  width: 100%;
+  height: auto;
+  margin: 0;
   display: flex;
   flex-direction: column;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
   background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  padding: 0;
 }
 
 .dish-card:hover {
@@ -367,12 +388,12 @@
 }
 
 .card-body {
-  padding: 10px;
+  padding: 1rem;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  height: 175px;
-  overflow-y: auto;
-
+  overflow: visible;
+  height: auto;
 }
 
 .card-title {
@@ -436,7 +457,6 @@
   font-size: 0.9rem;
   min-height: 36px;
 }
-
 /* Responsive Adjustments */
 @media (max-width: 992px) {
   .dashboard-container {
@@ -457,8 +477,8 @@
   }
 
   .dish-card {
-    width: 320px;
-    height: 320px;
+    width: auto;
+    height: auto;
   }
 
   .dish-image-container {
@@ -503,8 +523,8 @@
   }
 
   .dish-card {
-    width: 300px;
-    height: 300px;
+    width: auto;
+    height: auto;
   }
 
   .dish-image-container {

@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Form submission
-    addDishForm.addEventListener('submit', function(e) {
+    addDishForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         // Form validation
@@ -53,99 +53,132 @@ document.addEventListener('DOMContentLoaded', function() {
         const dishCategory = document.getElementById('dishCategory').value;
         const dishPrice = document.getElementById('dishPrice').value;
         const dishAvailability = document.getElementById('dishAvailability').value;
+        const dishDescription = document.getElementById('dishDescription').value.trim();
+        const vegetarian = document.getElementById('vegetarian').checked;
+        const vegan = document.getElementById('vegan').checked;
+        const glutenFree = document.getElementById('glutenFree').checked;
+        const imageFile = dishImage.files[0];
         
         if (!dishName) {
             showError('Please enter a dish name');
             return;
         }
-        
         if (!dishCategory) {
             showError('Please select a category');
             return;
         }
-        
         if (!dishPrice || parseFloat(dishPrice) <= 0) {
             showError('Please enter a valid price');
             return;
         }
 
-        // Create form data object
-        const formData = {
-            id: Date.now().toString(), // Generate a unique ID
-            name: dishName,
-            category: dishCategory,
-            price: parseFloat(dishPrice),
-            description: document.getElementById('dishDescription').value.trim(),
-            availability: dishAvailability,
-            dietaryInfo: {
-                vegetarian: document.getElementById('vegetarian').checked,
-                vegan: document.getElementById('vegan').checked,
-                glutenFree: document.getElementById('glutenFree').checked
-            }
-        };
+        // Create form data object for backend
+        const formData = new FormData();
+        formData.append('name', dishName);
+        formData.append('category', dishCategory);
+        formData.append('price', parseFloat(dishPrice));
+        formData.append('availability', dishAvailability);
+        formData.append('description', dishDescription);
+        formData.append('vegetarian', vegetarian);
+        formData.append('vegan', vegan);
+        formData.append('glutenFree', glutenFree);
 
-        // If image is selected, add it to formData
-        if (dishImage.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                formData.image = e.target.result;
-                saveDish(formData);
-            };
-            reader.readAsDataURL(dishImage.files[0]);
-        } else {
-            saveDish(formData);
+        if (imageFile) {
+            formData.append('image', imageFile);
         }
+
+        await saveDishToBackend(formData);
     });
 
-    // Save dish to localStorage
-    function saveDish(dishData) {
+    // Save dish to backend API
+    async function saveDishToBackend(formData) {
         try {
-            // Get existing dishes from localStorage
-            const existingDishes = JSON.parse(localStorage.getItem('dishes') || '[]');
-            
-            // Add new dish
-            existingDishes.push(dishData);
-            
-            // Save back to localStorage
-            localStorage.setItem('dishes', JSON.stringify(existingDishes));
-            
-            // Show success message
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showError('Authentication error. Please log in again.');
+                // Optionally redirect to login
+                // window.location.href = '../login.html'; 
+                return;
+            }
+
+            // Add loading indicator if desired
+            // showLoadingIndicator();
+
+            const response = await fetch('http://localhost:5000/api/dishes', {
+                method: 'POST',
+                headers: {
+                    // Content-Type is set automatically by browser for FormData
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            // Remove loading indicator
+            // hideLoadingIndicator();
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+
+            const newDish = await response.json();
+            console.log('Dish added successfully via API:', newDish);
+
             showSuccess('Dish added successfully!');
             
-            // Reset form
             addDishForm.reset();
             resetImagePreview(dishImage, previewImage, imagePlaceholder);
             
-            // Refresh the current menu display
-            refreshCurrentMenu();
+            refreshCurrentMenu(); // Refresh using data from backend now
+
         } catch (error) {
-            console.error('Error saving dish:', error);
-            showError('Failed to save dish. Please try again.');
+            console.error('Error saving dish to backend:', error);
+            showError(`Failed to save dish: ${error.message}`);
+            // hideLoadingIndicator();
         }
     }
 
-    // Refresh current menu display
-    function refreshCurrentMenu() {
+    // Refresh current menu display (fetch from backend)
+    async function refreshCurrentMenu() {
         const menuItemsGrid = document.querySelector('.menu-items-grid');
         if (!menuItemsGrid) return;
 
-        const dishes = JSON.parse(localStorage.getItem('dishes') || '[]');
-        menuItemsGrid.innerHTML = '';
+        try {
+            const token = localStorage.getItem('authToken');
+            // Fetch dishes from the backend API
+            const response = await fetch('http://localhost:5000/api/dishes', {
+                 headers: {
+                    'Authorization': `Bearer ${token}`
+                 }
+            });
+            if (!response.ok) {
+                 throw new Error('Failed to fetch dishes');
+            }
+            const dishes = await response.json();
 
-        dishes.forEach(dish => {
-            const dishCard = createDishCard(dish);
-            menuItemsGrid.appendChild(dishCard);
-        });
+            menuItemsGrid.innerHTML = '';
+            dishes.forEach(dish => {
+                const dishCard = createDishCard(dish);
+                menuItemsGrid.appendChild(dishCard);
+            });
+        } catch (error) {
+            console.error('Error refreshing menu:', error);
+            showError('Could not load menu items.');
+        }
     }
 
     // Create dish card for current menu
     function createDishCard(dish) {
         const card = document.createElement('div');
-        card.className = 'col-md-4 mb-4';
+        const dishId = dish._id; 
+        card.className = 'col-md-4 mb-4'; 
+        // Use existing default image as fallback
+        const fallbackImageUrl = '../images/default-profile.png'; // Changed to existing file
+        const imageUrl = dish.imageUrl ? `http://localhost:5000/${dish.imageUrl.replace(/\\/g, '/')}` : fallbackImageUrl;
         card.innerHTML = `
             <div class="card h-100">
                 <div class="dish-image-container">
-                    <img src="${dish.image || '../images/placeholder-image.jpg'}" class="card-img-top" alt="${dish.name}">
+                    <img src="${imageUrl}" class="card-img-top" alt="${dish.name}" onerror="this.onerror=null; this.src='${fallbackImageUrl}';">
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">${dish.name}</h5>
@@ -156,15 +189,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         <span class="badge bg-info">${dish.category}</span>
                     </div>
                     <div class="dietary-tags mt-2">
-                        ${dish.dietaryInfo.vegetarian ? '<span class="badge bg-secondary">Vegetarian</span>' : ''}
-                        ${dish.dietaryInfo.vegan ? '<span class="badge bg-secondary">Vegan</span>' : ''}
-                        ${dish.dietaryInfo.glutenFree ? '<span class="badge bg-secondary">Gluten Free</span>' : ''}
+                        ${dish.vegetarian ? '<span class="badge bg-secondary">Vegetarian</span>' : ''}
+                        ${dish.vegan ? '<span class="badge bg-secondary">Vegan</span>' : ''}
+                        ${dish.glutenFree ? '<span class="badge bg-secondary">Gluten Free</span>' : ''}
                     </div>
                     <div class="dish-actions mt-3">
-                        <button class="btn btn-sm btn-primary edit-dish-button" data-dish-id="${dish.id}">
+                        <button class="btn btn-sm btn-primary edit-dish-button" data-dish-id="${dishId}">
                             <i class="fas fa-edit"></i> Edit
                         </button>
-                        <button class="btn btn-sm btn-danger delete-dish-button" data-dish-id="${dish.id}">
+                        <button class="btn btn-sm btn-danger delete-dish-button" data-dish-id="${dishId}">
                             <i class="fas fa-trash"></i> Delete
                         </button>
                     </div>
@@ -172,159 +205,120 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        // Add event listeners
         const editButton = card.querySelector('.edit-dish-button');
         const deleteButton = card.querySelector('.delete-dish-button');
 
         editButton.addEventListener('click', () => editDish(dish));
-        deleteButton.addEventListener('click', () => deleteDish(dish.id));
+        deleteButton.addEventListener('click', () => deleteDish(dishId));
 
         return card;
     }
 
-    // Edit dish functionality
+    // Edit dish functionality (Needs update to use backend API)
     function editDish(dish) {
-        // Populate the edit modal with dish data
+        // Populate the edit modal with dish data (using dish._id)
         document.getElementById('editDishName').value = dish.name;
         document.getElementById('editDishCategory').value = dish.category;
         document.getElementById('editDishPrice').value = dish.price;
         document.getElementById('editDishDescription').value = dish.description || '';
         document.getElementById('editDishAvailability').value = dish.availability;
-        document.getElementById('editVegetarian').checked = dish.dietaryInfo.vegetarian;
-        document.getElementById('editVegan').checked = dish.dietaryInfo.vegan;
-        document.getElementById('editGlutenFree').checked = dish.dietaryInfo.glutenFree;
+        document.getElementById('editVegetarian').checked = dish.vegetarian; // Directly use boolean
+        document.getElementById('editVegan').checked = dish.vegan; // Directly use boolean
+        document.getElementById('editGlutenFree').checked = dish.glutenFree; // Directly use boolean
 
-        // Set the current dish ID
-        editDishForm.dataset.dishId = dish.id;
+        editDishForm.dataset.dishId = dish._id; // Use MongoDB _id
 
-        // Set the current image if it exists
-        if (dish.image) {
-            editPreviewImage.src = dish.image;
-            editPreviewImage.style.display = 'block';
-            editImagePlaceholder.style.display = 'none';
-        } else {
-            editPreviewImage.src = '../images/placeholder-image.jpg';
-            editPreviewImage.style.display = 'block';
-            editImagePlaceholder.style.display = 'none';
-        }
+        const imageUrl = dish.imageUrl ? `http://localhost:5000/${dish.imageUrl.replace(/\\/g, '/')}` : '../images/placeholder-image.jpg';
+        editPreviewImage.src = imageUrl;
+        editPreviewImage.style.display = 'block';
+        editImagePlaceholder.style.display = 'none';
 
-        // Show the edit modal
         editDishModal.show();
     }
 
-    // Handle edit form submission
-    saveEditDish.addEventListener('click', function() {
+    // Handle edit form submission (Needs update to use backend API)
+    saveEditDish.addEventListener('click', async function() {
         const dishId = editDishForm.dataset.dishId;
         if (!dishId) return;
 
-        // Form validation
         const dishName = document.getElementById('editDishName').value.trim();
         const dishCategory = document.getElementById('editDishCategory').value;
         const dishPrice = document.getElementById('editDishPrice').value;
         const dishAvailability = document.getElementById('editDishAvailability').value;
-        
-        if (!dishName) {
-            showError('Please enter a dish name');
+        const dishDescription = document.getElementById('editDishDescription').value.trim();
+        const vegetarian = document.getElementById('editVegetarian').checked;
+        const vegan = document.getElementById('editVegan').checked;
+        const glutenFree = document.getElementById('editGlutenFree').checked;
+        const imageFile = editDishImage.files[0];
+
+        if (!dishName || !dishCategory || !dishPrice || parseFloat(dishPrice) <= 0) {
+            showError('Please fill in all required fields correctly');
             return;
         }
-        
-        if (!dishCategory) {
-            showError('Please select a category');
-            return;
-        }
-        
-        if (!dishPrice || parseFloat(dishPrice) <= 0) {
-            showError('Please enter a valid price');
-            return;
+
+        const formData = new FormData();
+        formData.append('name', dishName);
+        formData.append('category', dishCategory);
+        formData.append('price', parseFloat(dishPrice));
+        formData.append('availability', dishAvailability);
+        formData.append('description', dishDescription);
+        formData.append('vegetarian', vegetarian);
+        formData.append('vegan', vegan);
+        formData.append('glutenFree', glutenFree);
+
+        if (imageFile) {
+            formData.append('image', imageFile);
         }
 
         try {
-            // Get existing dishes
-            const dishes = JSON.parse(localStorage.getItem('dishes') || '[]');
-            
-            // Find the dish to edit
-            const dishIndex = dishes.findIndex(d => d.id === dishId);
-            if (dishIndex === -1) {
-                showError('Dish not found');
-                return;
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`http://localhost:5000/api/dishes/${dishId}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
 
-            // Update dish data
-            dishes[dishIndex] = {
-                ...dishes[dishIndex],
-                name: dishName,
-                category: dishCategory,
-                price: parseFloat(dishPrice),
-                description: document.getElementById('editDishDescription').value.trim(),
-                availability: dishAvailability,
-                dietaryInfo: {
-                    vegetarian: document.getElementById('editVegetarian').checked,
-                    vegan: document.getElementById('editVegan').checked,
-                    glutenFree: document.getElementById('editGlutenFree').checked
-                }
-            };
-
-            // If new image is selected, update it
-            if (editDishImage.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    dishes[dishIndex].image = e.target.result;
-                    saveUpdatedDishes(dishes);
-                };
-                reader.readAsDataURL(editDishImage.files[0]);
-            } else {
-                saveUpdatedDishes(dishes);
-            }
+            showSuccess('Dish updated successfully!');
+            editDishModal.hide();
+            refreshCurrentMenu();
         } catch (error) {
             console.error('Error updating dish:', error);
-            showError('Failed to update dish. Please try again.');
+            showError(`Failed to update dish: ${error.message}`);
         }
     });
 
-    function saveUpdatedDishes(dishes) {
-        try {
-            // Save updated dishes to localStorage
-            localStorage.setItem('dishes', JSON.stringify(dishes));
-            
-            // Show success message
-            showSuccess('Dish updated successfully!');
-            
-            // Reset and close the edit modal
-            editDishForm.reset();
-            editDishModal.hide();
-            
-            // Refresh the current menu display
-            refreshCurrentMenu();
-        } catch (error) {
-            console.error('Error saving updated dishes:', error);
-            showError('Failed to save changes. Please try again.');
-        }
-    }
-
-    // Delete dish functionality
-    function deleteDish(dishId) {
+    // Delete dish functionality (Needs update to use backend API)
+    async function deleteDish(dishId) {
         if (!confirm('Are you sure you want to delete this dish?')) {
             return;
         }
 
         try {
-            // Get existing dishes
-            const dishes = JSON.parse(localStorage.getItem('dishes') || '[]');
-            
-            // Filter out the dish to delete
-            const updatedDishes = dishes.filter(dish => dish.id !== dishId);
-            
-            // Save updated dishes to localStorage
-            localStorage.setItem('dishes', JSON.stringify(updatedDishes));
-            
-            // Show success message
+            const token = localStorage.getItem('authToken');
+            const response = await fetch(`http://localhost:5000/api/dishes/${dishId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
+
             showSuccess('Dish deleted successfully!');
-            
-            // Refresh the current menu display
             refreshCurrentMenu();
         } catch (error) {
             console.error('Error deleting dish:', error);
-            showError('Failed to delete dish. Please try again.');
+            showError(`Failed to delete dish: ${error.message}`);
         }
     }
 
@@ -343,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function resetImagePreview(input, preview, placeholder) {
         input.value = '';
-        preview.src = '../images/placeholder-image.jpg';
+        preview.src = '../images/default-profile.png'; // Changed to existing file
         preview.style.display = 'block';
         placeholder.style.display = 'none';
     }
