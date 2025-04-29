@@ -1,100 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Payment Checkout | GrabNGo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment | GrabNGo</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/payment.css">
+    <link rel="stylesheet" href="../css/success.css">
 </head>
 <body class="payment-page">
-    <header>
-        <h1>Payment Checkout</h1>
-    </header>
-    <main>
-        <section class="payment-methods">
-            <h2>Select Payment Method</h2>
-            <form id="paymentForm">
-                <label>
-                    <input type="radio" name="paymentMethod" value="credit_card" required />
-                    Credit Card
-                </label>
-                <label>
-                    <input type="radio" name="paymentMethod" value="debit_card" />
-                    Debit Card
-                </label>
-                <label>
-                    <input type="radio" name="paymentMethod" value="net_banking" />
-                    Net Banking
-                </label>
-                <label>
-                    <input type="radio" name="paymentMethod" value="upi" />
-                    UPI
-                </label>
-                <label>
-                    <input type="radio" name="paymentMethod" value="cod" />
-                    Cash on Delivery
-                </label>
-                <button type="submit" class="btn-confirm">Confirm Order</button>
-            </form>
-        </section>
-        <section class="order-result" style="display:none;">
-            <h2>Order Confirmation</h2>
-            <p>Your order has been placed successfully!</p>
-            <p>Your order ID is: <span id="orderToken"></span></p>
-            <button id="btnBackToMenu">Back to Menu</button>
-        </section>
-    </main>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const paymentForm = document.getElementById('paymentForm');
-            const orderResultSection = document.querySelector('.order-result');
-            const orderTokenSpan = document.getElementById('orderToken');
-            const btnBackToMenu = document.getElementById('btnBackToMenu');
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h2 class="mb-0"><i class="fas fa-credit-card me-2"></i> Payment</h2>
+                        <a href="menu.html" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Menu
+                        </a>
+                    </div>
+                    
+                    <div class="card-body">
+                        <!-- Order Summary -->
+                        <section class="order-summary mb-4">
+                            <h3 class="mb-3"><i class="fas fa-receipt me-2"></i> Your Order</h3>
+                            <div id="orderItemsContainer" class="mb-3">
+                                <!-- Items will be loaded here -->
+                            </div>
+                            <div class="order-totals">
+                                <div class="d-flex justify-content-between">
+                                    <span>Subtotal:</span>
+                                    <span id="orderSubtotal">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Tax (5%):</span>
+                                    <span id="orderTax">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
+                                    <span>Total:</span>
+                                    <span id="orderTotal">₹0.00</span>
+                                </div>
+                            </div>
+                        </section>
 
-            // Retrieve cart from localStorage
-            const cart = JSON.parse(localStorage.getItem('checkoutCart')) || [];
+                        <!-- Payment Form -->
+                        <section class="payment-form">
+                            <h3 class="mb-3"><i class="fas fa-money-bill-wave me-2"></i> Payment Method</h3>
+                            
+                            <form id="paymentForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Select Payment Method</label>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" value="credit" checked>
+                                        <label class="form-check-label" for="creditCard">
+                                            <i class="fas fa-credit-card me-2"></i> Credit/Debit Card
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="paypal" value="paypal">
+                                        <label class="form-check-label" for="paypal">
+                                            <i class="fab fa-paypal me-2"></i> PayPal
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="cashOnDelivery" value="cash">
+                                        <label class="form-check-label" for="cashOnDelivery">
+                                            <i class="fas fa-money-bill-wave me-2"></i> Cash on Delivery
+                                        </label>
+                                    </div>
+                                </div>
 
-            paymentForm.addEventListener('submit', async function(event) {
-                event.preventDefault();
-                if (cart.length === 0) {
-                    alert('Your cart is empty!');
-                    return;
-                }
-                const formData = new FormData(paymentForm);
-                const paymentMethod = formData.get('paymentMethod');
-                if (!paymentMethod) {
-                    alert('Please select a payment method.');
-                    return;
-                }
+                                <!-- Credit Card Fields (shown by default) -->
+                                <div id="creditCardFields">
+                                    <div class="mb-3">
+                                        <label for="cardNumber" class="form-label">Card Number</label>
+                                        <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="expiryDate" class="form-label">Expiry Date</label>
+                                            <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="cvv" class="form-label">CVV</label>
+                                            <input type="text" class="form-control" id="cvv" placeholder="123">
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="cardName" class="form-label">Name on Card</label>
+                                        <input type="text" class="form-control" id="cardName" placeholder="John Doe">
+                                    </div>
+                                </div>
 
-                try {
-                    const response = await fetch('http://localhost:5000/api/orders', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + localStorage.getItem('authToken')
-                        },
-                        body: JSON.stringify({ items: cart, paymentMethod })
-                    });
-                    if (!response.ok) {
-                        throw new Error('Failed to place order');
-                    }
-                    const data = await response.json();
-                    // Show order ID
-                    orderTokenSpan.textContent = data.orderId || 'N/A';
-                    paymentForm.style.display = 'none';
-                    orderResultSection.style.display = 'block';
-                    // Clear cart from localStorage
-                    localStorage.removeItem('cart');
-                    localStorage.removeItem('checkoutCart');
-                } catch (error) {
-                    alert('Error placing order: ' + error.message);
-                }
-            });
+                                <!-- PayPal Fields (hidden by default) -->
+                                <div id="paypalFields" class="d-none">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i> You will be redirected to PayPal to complete your payment
+                                    </div>
+                                </div>
 
-            btnBackToMenu.addEventListener('click', function() {
-                window.location.href = 'menu.html';
-            });
-        });
-    </script>
+                                <!-- Cash on Delivery Fields (hidden by default) -->
+                                <div id="cashOnDeliveryFields" class="d-none">
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-circle me-2"></i> Please have exact change ready for the delivery person
+                                    </div>
+                                </div>
+
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg" id="submitPayment">
+                                        <i class="fas fa-lock me-2"></i> Complete Payment
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/payment.js"></script>
 </body>
 </html>

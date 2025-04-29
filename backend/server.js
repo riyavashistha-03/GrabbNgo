@@ -8,8 +8,21 @@ const cors = require('cors');
 const app = express();
 
 // Middleware
-app.use(cors({ origin: '*' }));
-app.options('*', cors({ origin: '*' }));
+const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:5500'];
+
+const corsOptions = {
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow requests with no origin (like mobile apps or curl)
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Serve static frontend files from GrabNgo/GrabNgo directory
@@ -34,11 +47,13 @@ const authRoutes = require('./routes/auth');
 const dishRoutes = require('./routes/dishes');
 const orderRoutes = require('./routes/orders');
 const staffRoutes = require('./routes/staff');
+const userRoutes = require('./routes/user');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dishes', dishRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/staff', staffRoutes);
+app.use('/api/user', userRoutes);
 
 // Default route
 app.get('/', (req, res) => {

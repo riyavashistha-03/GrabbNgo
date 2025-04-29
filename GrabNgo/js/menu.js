@@ -1,535 +1,580 @@
-// User Menu JavaScript - Refactored for clarity and removal of redundancies
+// State
+let menuItems = [];
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-function createButton(text, variant = 'primary', props = {}) {
-  const button = document.createElement('button');
-  button.className = `btn btn-${variant}`;
-  button.textContent = text;
-  Object.entries(props).forEach(([key, value]) => {
-    if (key.startsWith('on') && typeof value === 'function') {
-      button.addEventListener(key.substring(2).toLowerCase(), value);
-    } else {
-      button.setAttribute(key, value);
-    }
-  });
-  return button;
-}
+// DOM Content Loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the menu
+    loadMenuItems();
 
-document.addEventListener("DOMContentLoaded", function () {
-  // DOM Elements
-  const menuItemsContainer = document.querySelector(".menu-items-grid");
-  const categoryButtons = document.querySelectorAll(".category-filter .btn");
-  const dietaryFilters = document.querySelectorAll(".dietary-filter input");
-  const cartCount = document.querySelector(".cart-count");
-  const cartItemsContainer = document.querySelector(".cart-items");
-  const cartTotalElement = document.getElementById("cartTotal");
-  const checkoutButton = document.getElementById("checkoutButton");
-  const floatingCart = document.querySelector(".floating-cart");
-  const profileDropdown = document.querySelector(".profile-dropdown");
-  const profileButton = document.getElementById("dropdownMenuButton");
+    // Set up event listeners
+    setupEventListeners();
 
-  // Profile Elements
-  const userProfileImg = document.getElementById("userProfileImg");
-  const userName = document.getElementById("userName");
-  const profileImgContainer = document.querySelector(".profile-img-container");
-  const profilePhotoModal = new bootstrap.Modal(document.getElementById("profilePhotoModal"));
-  const profilePhotoInput = document.getElementById("profilePhotoInput");
-  const previewProfileImg = document.getElementById("previewProfileImg");
-  const saveProfilePhotoBtn = document.getElementById("saveProfilePhotoBtn");
-  const editProfileModal = new bootstrap.Modal(document.getElementById("editProfileModal"));
-  const editProfileBtn = document.getElementById("editProfileBtn");
-  const editProfileForm = document.getElementById("editProfileForm");
-  const saveProfileBtn = document.getElementById("saveProfileBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
+    // Update time display
+    updateTime();
+    setInterval(updateTime, 60000);
 
-  // State
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  let menuItems = [];
-  let userData = null;
+    // Load profile info
+    loadProfile();
 
-  // Initialize
-  fetchUserData();
-  fetchMenuItems();
-  updateCartCount();
-  renderCartItems();
-
-  // Event Listeners
-  categoryButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      categoryButtons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
-      filterMenuItems();
-    });
-  });
-
-  dietaryFilters.forEach(filter => {
-    filter.addEventListener("change", filterMenuItems);
-  });
-
-  // Profile Dropdown
-  if (profileButton) {
-    profileButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
-
-    document.addEventListener("click", () => {
-      const dropdown = document.querySelector(".dropdown-menu");
-      if (dropdown && dropdown.classList.contains("show")) {
-        dropdown.classList.remove("show");
-      }
-    });
-  }
-
-  // Profile Functions
-  async function fetchUserData() {
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        window.location.href = "../auth/login.html";
-        return;
-      }
-
-      const response = await fetch("http://localhost:5000/api/user/profile", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) throw new Error("Failed to fetch user data");
-      
-      userData = await response.json();
-      updateProfileDisplay();
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      showError("Failed to load profile. Please try again later.");
-    }
-  }
-
-  function updateProfileDisplay() {
-    if (!userData) return;
-
-    userName.textContent = userData.fullName || "User";
-    userProfileImg.src = userData.profilePhoto || "../images/default-profile.png";
-    previewProfileImg.src = userData.profilePhoto || "../images/default-profile.png";
-  }
-
-  // Profile Photo Change
-  profileImgContainer.addEventListener("click", () => {
-    profilePhotoModal.show();
-  });
-
-  profilePhotoInput.addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        document.getElementById("photoError").textContent = "Image size should be less than 5MB";
-        document.getElementById("photoError").classList.remove("d-none");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previewProfileImg.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-      document.getElementById("photoError").classList.add("d-none");
-    }
-  });
-
-  saveProfilePhotoBtn.addEventListener("click", async () => {
-    const file = profilePhotoInput.files[0];
-    if (!file) {
-      document.getElementById("photoError").textContent = "Please select a photo";
-      document.getElementById("photoError").classList.remove("d-none");
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.append("profilePhoto", file);
-
-      const response = await fetch("http://localhost:5000/api/user/profile/photo", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
-        },
-        body: formData
-      });
-
-      if (!response.ok) throw new Error("Failed to update profile photo");
-
-      const data = await response.json();
-      userData.profilePhoto = data.profilePhoto;
-      updateProfileDisplay();
-      profilePhotoModal.hide();
-      showSuccess("Profile photo updated successfully");
-    } catch (error) {
-      console.error("Error updating profile photo:", error);
-      document.getElementById("photoError").textContent = "Failed to update profile photo";
-      document.getElementById("photoError").classList.remove("d-none");
-    }
-  });
-
-  // Edit Profile
-  editProfileBtn.addEventListener("click", () => {
-    if (!userData) return;
-
-    document.getElementById("editFullName").value = userData.fullName || "";
-    document.getElementById("editEmail").value = userData.email || "";
-    document.getElementById("editPhone").value = userData.phone || "";
-    editProfileModal.show();
-  });
-
-  saveProfileBtn.addEventListener("click", async () => {
-    const formData = {
-      fullName: document.getElementById("editFullName").value,
-      email: document.getElementById("editEmail").value,
-      phone: document.getElementById("editPhone").value
-    };
-
-    try {
-      const response = await fetch("http://localhost:5000/api/user/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) throw new Error("Failed to update profile");
-
-      userData = { ...userData, ...formData };
-      updateProfileDisplay();
-      editProfileModal.hide();
-      showSuccess("Profile updated successfully");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      document.getElementById("profileError").textContent = "Failed to update profile";
-      document.getElementById("profileError").classList.remove("d-none");
-    }
-  });
-
-  // Logout
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("authToken");
-    window.location.href = "../auth/login.html";
-  });
-
-  // Fetch menu items from backend
-  async function fetchMenuItems() {
-    try {
-      console.log('Starting to fetch menu items...');
-      const token = localStorage.getItem('authToken');
-      console.log('Auth token:', token ? 'Present' : 'Missing');
-      
-      const response = await fetch('http://localhost:5000/api/dishes', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      console.log('Response status:', response.status);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch menu items: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('Menu items fetched successfully:', data);
-      menuItems = data;
-      renderMenuItems(menuItems);
-    } catch (error) {
-      console.error('Error fetching menu items:', error);
-      showError('Failed to load menu items. Please try again later.');
-    }
-  }
-
-  // Render menu items
-  function renderMenuItems(items) {
-    const menuItemsRow = document.getElementById('menu-items-row');
-    menuItemsRow.innerHTML = '';
-    items.forEach(item => {
-      const col = document.createElement('div');
-      col.className = 'col-md-4 mb-4';
-      col.innerHTML = `
-        <div class="card h-100">
-          <img src="${item.image || '../images/placeholder-image.jpg'}" class="card-img-top" alt="${item.name}">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">${item.name}</h5>
-            <p class="card-text">${item.description || ''}</p>
-            <div class="mt-auto">
-              <span class="badge bg-primary">₹${item.price}</span>
-              <button class="btn btn-success btn-sm float-end">Add to Cart</button>
-            </div>
-          </div>
-        </div>
-      `;
-      menuItemsRow.appendChild(col);
-    });
-  }
-
-  // Filter menu items
-  function filterMenuItems() {
-    const activeCategory = document.querySelector(".category-filter .btn.active").dataset.category;
-    const vegetarianChecked = document.getElementById("vegetarianFilter").checked;
-    const veganChecked = document.getElementById("veganFilter").checked;
-    const glutenFreeChecked = document.getElementById("glutenFreeFilter").checked;
-
-    const filteredItems = menuItems.filter(item => {
-      const categoryMatch = activeCategory === "all" || item.category === activeCategory;
-      const vegetarianMatch = !vegetarianChecked || item.vegetarian;
-      const veganMatch = !veganChecked || item.vegan;
-      const glutenFreeMatch = !glutenFreeChecked || item.glutenFree;
-
-      return categoryMatch && vegetarianMatch && veganMatch && glutenFreeMatch;
-    });
-
-    renderMenuItems(filteredItems);
-  }
-
-  // Cart functions
-  function addToCart(item) {
-    const existingItem = cart.find(i => i._id === item._id);
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({ ...item, quantity: 1 });
-    }
-    updateCart();
-    showAddToCartConfirmation(item.name);
-  }
-
-  function updateCart() {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    // Initialize cart
     updateCartCount();
     renderCartItems();
-  }
 
-  function updateCartCount() {
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.textContent = total;
-  }
+    // Profile edit modal
+    const profileEditModal = new bootstrap.Modal(document.getElementById('profileEditModal'));
+    
+    document.getElementById('profileEditBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        profileEditModal.show();
+    });
 
-  function renderCartItems() {
-    if (!cartItemsContainer) return;
-    cartItemsContainer.innerHTML = "";
+    // Profile photo preview
+    document.getElementById('profilePhotoInput').addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePreview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
-    if (cart.length === 0) {
-      cartItemsContainer.innerHTML = "<p class='text-center'>Your cart is empty</p>";
-      cartTotalElement.textContent = "0";
-      return;
+document.getElementById('profileEditForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const newName = document.getElementById('profileNameInput').value.trim();
+    const fileInput = document.getElementById('profilePhotoInput');
+    const profileEditModal = bootstrap.Modal.getInstance(document.getElementById('profileEditModal'));
+
+    try {
+        // Update profile name
+        const updateResponse = await fetch('http://localhost:5000/api/user/profile', {
+            method: 'PUT',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fullName: newName })
+        });
+
+        if (!updateResponse.ok) {
+            throw new Error('Failed to update profile');
+        }
+
+        // If profile photo changed, upload it
+        if (fileInput.files[0]) {
+            const formData = new FormData();
+            formData.append('profilePhoto', fileInput.files[0]);
+
+            const photoResponse = await fetch('http://localhost:5000/api/user/profile/photo', {
+                method: 'POST',
+                credentials: 'include',
+                body: formData
+            });
+
+            if (!photoResponse.ok) {
+                throw new Error('Failed to upload profile photo');
+            }
+
+            const photoData = await photoResponse.json();
+            document.getElementById('profileImage').src = photoData.profilePhoto.startsWith('http') ? photoData.profilePhoto : 'http://localhost:5000' + photoData.profilePhoto;
+            document.getElementById('profilePreview').src = document.getElementById('profileImage').src;
+        }
+
+        // Update UI with new name
+        document.getElementById('profileName').textContent = newName;
+        profileEditModal.hide();
+        showToast('Profile updated successfully!', 'success');
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        showToast('Failed to update profile', 'error');
+    }
+});
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.removeItem('profileName');
+        localStorage.removeItem('profileImage');
+        localStorage.removeItem('cart');
+        window.location.href = '../auth/login.html';
+    });
+});
+
+// Load menu items from backend
+function loadMenuItems() {
+    // Show loading state
+    document.getElementById('menu-items-container').innerHTML = `
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-gold" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading menu items...</p>
+        </div>
+    `;
+
+    // Simulate API call (replace with actual fetch)
+    setTimeout(() => {
+        fetch('http://localhost:5000/api/dishes')
+            .then(response => response.json())
+            .then(data => {
+                menuItems = data;
+                displayMenuItems(menuItems);
+            })
+            .catch(error => {
+                console.error('Error loading menu items:', error);
+                document.getElementById('menu-items-container').innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <p class="text-danger">Failed to load menu. Please try again later.</p>
+                        <button class="btn btn-gold" onclick="loadMenuItems()">Retry</button>
+                    </div>
+                `;
+            });
+    }, 1000);
+}
+
+// Display menu items
+function displayMenuItems(items) {
+    const container = document.getElementById('menu-items-container');
+    container.innerHTML = '';
+
+    if (items.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-utensils fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No menu items match your filters</p>
+                <button class="btn btn-outline-gold" onclick="resetFilters()">Reset Filters</button>
+            </div>
+        `;
+        return;
     }
 
-    let total = 0;
-    cart.forEach(item => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
+    items.forEach(item => {
+        const badges = [];
+        if (item.vegetarian) badges.push('<span class="badge bg-success me-1">Veg</span>');
+        if (item.vegan) badges.push('<span class="badge bg-primary me-1">Vegan</span>');
+        if (item.glutenFree) badges.push('<span class="badge bg-info">GF</span>');
 
-      const cartItem = document.createElement("div");
-      cartItem.className = "cart-item";
-      cartItem.innerHTML = `
-        <div class="cart-item-details">
-          <h5>${item.name}</h5>
-          <p>₹${item.price} x ${item.quantity}</p>
+const premiumBadge = item.isPremium ? '<div class="badge-premium">Chef\'s Pick</div>' : '';
+
+container.innerHTML += `
+    <div class="col" data-category="${item.category}" 
+         data-vegetarian="${item.vegetarian}" 
+         data-vegan="${item.vegan}" 
+         data-glutenfree="${item.glutenFree}"
+         data-popular="${item.isPopular}"
+         data-seasonal="${item.isSeasonal}">
+        <div class="card menu-item h-100 border-0 shadow-sm">
+            ${premiumBadge}
+            <img src="${item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:5000/' + item.imageUrl}" class="card-img-top" alt="${item.name}">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">${item.name}</h5>
+                    <span class="text-gold fw-bold">₹${item.price.toFixed(2)}</span>
+                </div>
+                <p class="card-text text-muted small">${item.description}</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div>${badges.join('')}</div>
+                    <button class="btn btn-sm btn-gold rounded-pill px-3 add-to-cart" data-id="${item._id}">
+                        <i class="fas fa-plus me-1"></i> Add
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="cart-item-quantity">
-          <button class="btn-quantity" onclick="updateQuantity('${item._id}', ${item.quantity - 1})">-</button>
-          <span>${item.quantity}</span>
-          <button class="btn-quantity" onclick="updateQuantity('${item._id}', ${item.quantity + 1})">+</button>
-        </div>
-      `;
-      cartItemsContainer.appendChild(cartItem);
+    </div>
+`;
+    });
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Category filtering
+    document.querySelectorAll('.category-filter').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const category = this.dataset.category;
+            filterMenuItems(category);
+
+            // Update active state
+            document.querySelectorAll('.category-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
     });
 
-    cartTotalElement.textContent = total.toFixed(2);
-  }
-
-  // Helper functions
-  function showAddToCartConfirmation(itemName) {
-    const toast = document.createElement("div");
-    toast.className = "toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3";
-    toast.setAttribute("role", "alert");
-    toast.setAttribute("aria-live", "assertive");
-    toast.setAttribute("aria-atomic", "true");
-    toast.innerHTML = `
-      <div class="d-flex">
-        <div class="toast-body">
-          ${itemName} added to cart!
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    `;
-    document.body.appendChild(toast);
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
-    toast.addEventListener("hidden.bs.toast", () => {
-      document.body.removeChild(toast);
+    // Dietary filtering
+    document.querySelectorAll('.dietary-filter').forEach(checkbox => {
+        checkbox.addEventListener('change', applyFilters);
     });
-  }
 
-  function showError(message) {
-    const toast = document.createElement("div");
-    toast.className = "toast align-items-center text-white bg-danger border-0 position-fixed bottom-0 end-0 m-3";
-    toast.setAttribute("role", "alert");
-    toast.setAttribute("aria-live", "assertive");
-    toast.setAttribute("aria-atomic", "true");
-    toast.innerHTML = `
-      <div class="d-flex">
-        <div class="toast-body">
-          ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    `;
-    document.body.appendChild(toast);
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
-    toast.addEventListener("hidden.bs.toast", () => {
-      document.body.removeChild(toast);
+    // Quick filters
+    document.querySelectorAll('.quick-filter').forEach(button => {
+        button.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            applyQuickFilter(filter);
+
+            // Update active state
+            document.querySelectorAll('.quick-filter').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
     });
-  }
 
-  function showSuccess(message) {
-    const toast = document.createElement("div");
-    toast.className = "toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3";
-    toast.setAttribute("role", "alert");
-    toast.setAttribute("aria-live", "assertive");
-    toast.setAttribute("aria-atomic", "true");
-    toast.innerHTML = `
-      <div class="d-flex">
-        <div class="toast-body">
-          ${message}
-        </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-      </div>
-    `;
-    document.body.appendChild(toast);
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
-    toast.addEventListener("hidden.bs.toast", () => {
-      document.body.removeChild(toast);
+    // Search functionality
+    document.getElementById('search-button').addEventListener('click', performSearch);
+    document.getElementById('menu-search').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') performSearch();
     });
-  }
 
-  // Global functions for cart quantity updates
-  window.updateQuantity = function(itemId, newQuantity) {
-    const item = cart.find(i => i._id === itemId);
+    // Add to cart buttons
+    document.getElementById('menu-items-container').addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-to-cart') || e.target.closest('.add-to-cart')) {
+            const button = e.target.classList.contains('add-to-cart') ? e.target : e.target.closest('.add-to-cart');
+            const itemId = button.dataset.id;
+            addToCart(itemId);
+        }
+    });
+
+    // Cart offcanvas events
+    document.getElementById('cart-items-container').addEventListener('click', function(e) {
+        if (e.target.classList.contains('quantity-btn') || e.target.closest('.quantity-btn')) {
+            const button = e.target.classList.contains('quantity-btn') ? e.target : e.target.closest('.quantity-btn');
+            const itemId = button.dataset.id;
+            const action = button.dataset.action;
+            updateCartItemQuantity(itemId, action);
+        } else if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
+            const button = e.target.classList.contains('remove-item') ? e.target : e.target.closest('.remove-item');
+            const itemId = button.dataset.id;
+            removeCartItem(itemId);
+        }
+    });
+
+    // Checkout button
+    document.getElementById('checkout-button').addEventListener('click', proceedToCheckout);
+}
+
+// Filter menu items by category
+function filterMenuItems(category) {
+    const activeCategory = category || 'all';
+    const vegetarianChecked = document.getElementById('vegetarianFilter')?.checked || false;
+    const veganChecked = document.getElementById('veganFilter')?.checked || false;
+    const glutenFreeChecked = document.getElementById('glutenFreeFilter')?.checked || false;
+
+    const filteredItems = menuItems.filter(item => {
+        const categoryMatch = activeCategory === 'all' || item.category === activeCategory;
+        const vegetarianMatch = !vegetarianChecked || item.vegetarian;
+        const veganMatch = !veganChecked || item.vegan;
+        const glutenFreeMatch = !glutenFreeChecked || item.glutenFree;
+
+        return categoryMatch && vegetarianMatch && veganMatch && glutenFreeMatch;
+    });
+
+    displayMenuItems(filteredItems);
+}
+
+// Apply quick filter
+function applyQuickFilter(filter) {
+    let filteredItems = [...menuItems];
+
+    switch (filter) {
+        case 'all':
+            // No additional filtering
+            break;
+        case 'popular':
+            filteredItems = filteredItems.filter(item => item.isPopular);
+            break;
+        case 'chefs-picks':
+            filteredItems = filteredItems.filter(item => item.isPremium);
+            break;
+        case 'seasonal':
+            filteredItems = filteredItems.filter(item => item.isSeasonal);
+            break;
+        default:
+            break;
+    }
+
+    // Apply category and dietary filters
+    const activeCategoryButton = document.querySelector('.category-filter.active');
+    const activeCategory = activeCategoryButton ? activeCategoryButton.dataset.category : 'all';
+
+    const vegetarianChecked = document.getElementById('vegetarianFilter')?.checked || false;
+    const veganChecked = document.getElementById('veganFilter')?.checked || false;
+    const glutenFreeChecked = document.getElementById('glutenFreeFilter')?.checked || false;
+
+    filteredItems = filteredItems.filter(item => {
+        const categoryMatch = activeCategory === 'all' || item.category === activeCategory;
+        const vegetarianMatch = !vegetarianChecked || item.vegetarian;
+        const veganMatch = !veganChecked || item.vegan;
+        const glutenFreeMatch = !glutenFreeChecked || item.glutenFree;
+
+        return categoryMatch && vegetarianMatch && veganMatch && glutenFreeMatch;
+    });
+
+    displayMenuItems(filteredItems);
+}
+
+// Apply all filters
+function applyFilters() {
+    const activeCategoryButton = document.querySelector('.category-filter.active');
+    const activeCategory = activeCategoryButton ? activeCategoryButton.dataset.category : 'all';
+    filterMenuItems(activeCategory);
+}
+
+// Perform search
+function performSearch() {
+    const searchTerm = document.getElementById('menu-search').value.trim().toLowerCase();
+    if (!searchTerm) {
+        applyFilters(); // Reset to current filters
+        return;
+    }
+
+    const filteredItems = menuItems.filter(item => {
+        return item.name.toLowerCase().includes(searchTerm) || 
+               (item.description && item.description.toLowerCase().includes(searchTerm));
+    });
+
+    displayMenuItems(filteredItems);
+}
+
+// Reset all filters
+function resetFilters() {
+    // Reset category
+    document.querySelectorAll('.category-filter').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.category === 'all') btn.classList.add('active');
+    });
+
+    // Reset dietary filters
+    document.getElementById('vegetarianFilter').checked = false;
+    document.getElementById('veganFilter').checked = false;
+    document.getElementById('glutenFreeFilter').checked = false;
+
+    // Reset quick filters
+    document.querySelectorAll('.quick-filter').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.filter === 'all') btn.classList.add('active');
+    });
+
+    // Reset search
+    document.getElementById('menu-search').value = '';
+
+    // Show all items
+    displayMenuItems(menuItems);
+}
+
+// Add item to cart
+function addToCart(itemId) {
+    const item = menuItems.find(i => i.id == itemId);
     if (!item) return;
 
-    if (newQuantity <= 0) {
-      cart = cart.filter(i => i._id !== itemId);
+    const existingItem = cart.find(i => i.id == itemId);
+    if (existingItem) {
+        existingItem.quantity += 1;
     } else {
-      item.quantity = newQuantity;
-    }
-    updateCart();
-  };
-
-  // Checkout button handler
-  if (checkoutButton) {
-    checkoutButton.addEventListener("click", () => {
-      if (cart.length === 0) {
-        showError("Your cart is empty!");
-        return;
-      }
-      // Redirect to checkout page
-      window.location.href = "checkout.html";
-    });
-  }
-});
-
-// Render star rating HTML
-function renderStars(rating) {
-  const fullStars = Math.floor(rating);
-  const halfStar = rating - fullStars >= 0.5;
-  let starsHtml = "";
-  for (let i = 0; i < fullStars; i++) starsHtml += '<i class="fas fa-star"></i>';
-  if (halfStar) starsHtml += '<i class="fas fa-star-half-alt"></i>';
-  const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-  for (let i = 0; i < emptyStars; i++) starsHtml += '<i class="far fa-star"></i>';
-  return starsHtml;
-}
-
-// Event delegation for rate buttons
-document.getElementById("menu-items-row").addEventListener("click", function (event) {
-  if (event.target.classList.contains("btn-rate")) {
-    const ratingContainer = event.target.closest(".item-rating");
-    if (!ratingContainer) return;
-    const dishId = ratingContainer.dataset.dishId;
-    openRatingModal(dishId, ratingContainer);
-  }
-});
-
-// Open rating modal popup
-function openRatingModal(dishId, ratingContainer) {
-  const popup = document.createElement("div");
-  popup.className = "rating-popup";
-  popup.innerHTML = `
-    <div class="popup-content">
-      <h3>Rate this dish</h3>
-      <div class="star-rating">
-        <i class="far fa-star" data-value="1"></i>
-        <i class="far fa-star" data-value="2"></i>
-        <i class="far fa-star" data-value="3"></i>
-        <i class="far fa-star" data-value="4"></i>
-        <i class="far fa-star" data-value="5"></i>
-      </div>
-      <button class="btn btn-submit-rating" disabled>Submit</button>
-      <button class="btn btn-cancel-rating">Cancel</button>
-    </div>
-  `;
-  document.body.appendChild(popup);
-
-  let selectedRating = 0;
-  const stars = popup.querySelectorAll(".star-rating i");
-  const submitBtn = popup.querySelector(".btn-submit-rating");
-  const cancelBtn = popup.querySelector(".btn-cancel-rating");
-
-  stars.forEach(star => {
-    star.addEventListener("mouseenter", () => highlightStars(stars, star.dataset.value));
-    star.addEventListener("mouseleave", () => highlightStars(stars, selectedRating));
-    star.addEventListener("click", () => {
-      selectedRating = star.dataset.value;
-      highlightStars(stars, selectedRating);
-      submitBtn.disabled = false;
-    });
-  });
-
-  submitBtn.addEventListener("click", async () => {
-    if (selectedRating > 0) {
-      try {
-        const response = await fetch(`http://localhost:5000/api/dishes/${dishId}/rate`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("authToken"),
-          },
-          body: JSON.stringify({ rating: Number(selectedRating) }),
+        cart.push({ 
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            imageUrl: item.imageUrl,
+            quantity: 1 
         });
-        if (!response.ok) throw new Error("Failed to submit rating");
-        const data = await response.json();
-        ratingContainer.querySelector(".average-rating").textContent = data.averageRating.toFixed(1);
-        ratingContainer.querySelector(".stars").innerHTML = renderStars(data.averageRating);
-        alert("Rating submitted successfully");
-        document.body.removeChild(popup);
-      } catch (error) {
-        alert("Error submitting rating: " + error.message);
-      }
     }
-  });
 
-  cancelBtn.addEventListener("click", () => {
-    document.body.removeChild(popup);
-  });
+    updateCart();
+    showAddToCartConfirmation(item.name);
 }
 
-// Highlight stars in rating modal
-function highlightStars(stars, count) {
-  stars.forEach(star => {
-    if (star.dataset.value <= count) {
-      star.classList.remove("far");
-      star.classList.add("fas");
-    } else {
-      star.classList.remove("fas");
-      star.classList.add("far");
+// Update cart in storage and UI
+function updateCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount();
+    renderCartItems();
+}
+
+// Update cart count
+function updateCartCount() {
+    const cartCount = document.querySelector('.cart-count');
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCount.textContent = total;
+    cartCount.style.display = total > 0 ? 'flex' : 'none';
+}
+
+// Render cart items
+function renderCartItems() {
+    const container = document.getElementById('cart-items-container');
+    container.innerHTML = '';
+
+    if (cart.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-4">
+                <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Your cart is empty</p>
+            </div>
+        `;
+        updateCartSummary(0, 0, 0);
+        return;
     }
-  });
+
+    cart.forEach(item => {
+        container.innerHTML += `
+            <div class="cart-item">
+                <img src="${item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:5000/' + item.imageUrl}" alt="${item.name}">
+                <div class="cart-item-details">
+                    <div class="cart-item-name">${item.name}</div>
+                    <div class="cart-item-price">₹${(item.price * item.quantity).toFixed(2)}</div>
+                    <div class="quantity-control mt-2">
+                        <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                        <span class="quantity-value">${item.quantity}</span>
+                        <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
+                        <button class="remove-item ms-3" data-id="${item.id}" title="Remove item">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const tax = subtotal * 0.05;
+    const total = subtotal + tax;
+
+    updateCartSummary(subtotal, tax, total);
+}
+
+// Update cart summary
+function updateCartSummary(subtotal, tax, total) {
+    document.getElementById('cart-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+    document.getElementById('cart-tax').textContent = `₹${tax.toFixed(2)}`;
+    document.getElementById('cart-total').textContent = `₹${total.toFixed(2)}`;
+}
+
+// Update cart item quantity
+function updateCartItemQuantity(itemId, action) {
+    const item = cart.find(i => i.id == itemId);
+    if (!item) return;
+
+    if (action === 'increase') {
+        item.quantity += 1;
+    } else if (action === 'decrease') {
+        item.quantity = Math.max(1, item.quantity - 1);
+    }
+
+    updateCart();
+}
+
+// Remove item from cart
+function removeCartItem(itemId) {
+    cart = cart.filter(i => i.id != itemId);
+    updateCart();
+}
+
+// Proceed to checkout
+function proceedToCheckout() {
+    if (cart.length === 0) {
+        showToast('Your cart is empty!', 'error');
+        return;
+    }
+
+    // Save cart for checkout page
+    localStorage.setItem('checkoutCart', JSON.stringify(cart));
+    window.location.href = 'payment.html';
+}
+
+// Show add to cart confirmation
+function showAddToCartConfirmation(itemName) {
+    showToast(`${itemName} added to cart!`, 'success');
+}
+
+// Show toast notification
+function showToast(message, type = 'info') {
+    const toastContainer = document.querySelector('.toast-container') || createToastContainer();
+    const toastId = `toast-${Date.now()}`;
+    
+    const toast = document.createElement('div');
+    toast.id = toastId;
+    toast.className = `toast show align-items-center text-white bg-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'dark'} border-0`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto dismiss after 3 seconds
+    setTimeout(() => {
+        const bsToast = bootstrap.Toast.getOrCreateInstance(toast);
+        bsToast.hide();
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+    }, 3000);
+}
+
+// Create toast container if not exists
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+// Load profile from backend API
+async function loadProfile() {
+    try {
+        const response = await fetch('http://localhost:5000/api/user/profile', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch profile');
+        }
+        const user = await response.json();
+        const profileNameElem = document.getElementById('profileName');
+        const profileNameInput = document.getElementById('profileNameInput');
+        const profileImage = document.getElementById('profileImage');
+        const profilePreview = document.getElementById('profilePreview');
+
+        if (user.name) {
+            profileNameElem.textContent = user.name;
+            profileNameInput.value = user.name;
+        }
+        if (user.profilePhoto) {
+            const photoUrl = user.profilePhoto.startsWith('http') ? user.profilePhoto : 'http://localhost:5000' + user.profilePhoto;
+            profileImage.src = photoUrl;
+            profilePreview.src = photoUrl;
+        }
+    } catch (error) {
+        console.error('Error loading profile:', error);
+        showToast('Failed to load profile', 'error');
+    }
+}
+
+// Update time display
+function updateTime() {
+    const now = new Date();
+    const timeElem = document.getElementById('current-time');
+    const dateElem = document.getElementById('current-date');
+    
+    if (timeElem) {
+        timeElem.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+    
+    if (dateElem) {
+        dateElem.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+    }
 }

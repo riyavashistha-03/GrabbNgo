@@ -17,10 +17,25 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
+const path = require('path');
+
 // Get all dishes (menu)
 router.get('/', async (req, res) => {
     try {
-        const dishes = await Dish.find();
+        let dishes = await Dish.find();
+
+        // Normalize imageUrl for each dish
+        dishes = dishes.map(dish => {
+            if (dish.imageUrl) {
+                let normalizedPath = dish.imageUrl.replace(/\\/g, '/');
+                if (!normalizedPath.startsWith('uploads/')) {
+                    normalizedPath = path.posix.join('uploads', path.basename(normalizedPath));
+                }
+                dish.imageUrl = normalizedPath;
+            }
+            return dish;
+        });
+
         res.json(dishes);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
