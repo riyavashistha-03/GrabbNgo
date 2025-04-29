@@ -1,0 +1,107 @@
+/* Party Planner Specific Styles */
+
+/* Ensure consistent background if menu.css isn't imported or is overridden */
+body.premium-dashboard {
+    background-color: #f5f5f5; 
+}
+
+/* Menu Item Card Adjustments */
+.party-menu-item-card {
+    transition: all 0.3s ease;
+}
+
+.party-menu-item-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.party-menu-item-card .card-body {
+    padding: 1rem; 
+}
+
+.party-menu-item-card .card-title {
+    font-size: 1rem; 
+    margin-bottom: 0.5rem;
+}
+
+.party-menu-item-card .item-price {
+    font-size: 0.9rem;
+}
+
+.party-menu-item-card .menu-item-img {
+    height: 150px; /* Slightly smaller image */
+    object-fit: cover;
+}
+
+/* Quantity Input */
+.quantity-input-group {
+    display: flex;
+    align-items: center; 
+    max-width: 120px; /* Limit width */
+}
+
+.quantity-input-group .form-control {
+    text-align: center;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    padding: 0.3rem 0.2rem; /* Adjust padding */
+    height: auto; /* Auto height */
+    min-width: 40px; /* Ensure it doesn't get too small */
+}
+
+.quantity-input-group .btn {
+    border-radius: 0; /* Square buttons */
+    padding: 0.3rem 0.6rem;
+    border-color: #ced4da;
+}
+
+/* Style the number input arrows (optional, browser specific) */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+
+/* Party Order Summary */
+#party-order-summary {
+    max-height: 50vh; /* Limit height and allow scroll */
+    overflow-y: auto;
+    padding-right: 5px; /* Space for scrollbar */
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item-name {
+    flex-grow: 1;
+    padding-right: 1rem;
+}
+
+.summary-item-qty {
+    font-weight: 600;
+    min-width: 30px;
+    text-align: right;
+}
+
+.party-order-total {
+    font-size: 1.1rem;
+}
+
+#party-total-items {
+    font-weight: bold;
+} 

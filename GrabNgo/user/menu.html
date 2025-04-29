@@ -29,10 +29,10 @@
                         <a class="nav-link" href="#"><i class="fas fa-home me-1"></i> Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#"><i class="fas fa-utensils me-1"></i> Menu</a>
+                        <a class="nav-link active" href="menu.html"><i class="fas fa-utensils me-1"></i> Menu</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fas fa-percent me-1"></i> Promotions</a>
+                        <a class="nav-link" href="party_planner.html"><i class="fas fa-glass-cheers me-1"></i> Plan a Party</a>
                     </li>
                 </ul>
                 <!-- Profile Dropdown -->
@@ -205,14 +205,18 @@
                     <p class="text-muted">Your cart is empty</p>
                 </div>
             </div>
+            
+            <!-- Schedule Order Section -->
+            <div class="schedule-section mt-3 pt-3 border-top">
+                <label for="scheduleTimeInput" class="form-label fw-bold">Schedule for later?</label>
+                <input type="time" class="form-control" id="scheduleTimeInput" name="scheduleTime">
+                <div class="form-text">Leave blank to order for ASAP.</div>
+            </div>
+            
             <div class="cart-total mt-3 pt-3 border-top">
                 <div class="d-flex justify-content-between">
                     <span>Subtotal:</span>
                     <span id="cart-subtotal">₹0.00</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <span>Tax (5%):</span>
-                    <span id="cart-tax">₹0.00</span>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between fw-bold">
@@ -221,6 +225,75 @@
                 </div>
             </div>
             <button class="btn btn-gold w-100 py-2" id="checkout-button">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Rating Modal -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="ratingModalLabel">Rate: <span id="ratingItemName">Item</span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p>Select your rating:</p>
+                    <div class="star-rating mb-4" id="modalStarRating">
+                        <i class="far fa-star" data-value="1"></i>
+                        <i class="far fa-star" data-value="2"></i>
+                        <i class="far fa-star" data-value="3"></i>
+                        <i class="far fa-star" data-value="4"></i>
+                        <i class="far fa-star" data-value="5"></i>
+                    </div>
+                    <input type="hidden" id="ratingItemId">
+                    <input type="hidden" id="selectedRatingValue">
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-gold" id="submitRatingBtn">Submit Rating</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dish Detail Modal -->
+    <div class="modal fade" id="dishDetailModal" tabindex="-1" aria-labelledby="dishDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white border-0">
+                    <h4 class="modal-title" id="dishDetailModalLabel">Dish Details</h4>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <img src="" id="dishDetailImage" class="img-fluid w-100" alt="Dish Image" style="max-height: 300px; object-fit: cover;">
+                    <div class="p-4">
+                        <h5 id="dishDetailName" class="mb-3">Dish Name</h5>
+                        <p id="dishDetailDescription" class="text-muted mb-4">Description goes here.</p>
+                        
+                        <div class="row align-items-center mb-4">
+                            <div class="col-md-6">
+                                <span id="dishDetailPrice" class="fs-4 fw-bold text-gold">₹0.00</span>
+                            </div>
+                             <div class="col-md-6 text-md-end">
+                                <button class="btn btn-success add-to-cart-from-modal" data-id="">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+
+                        <h6 class="text-gold">Nutritional Information</h6>
+                        <ul class="list-group list-group-flush" id="dishDetailNutrition">
+                            <!-- Nutritional info loaded by JS -->
+                             <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Loading...
+                             </li>
+                        </ul>
+                    </div>
+                </div>
+                 <div class="modal-footer bg-light">
+                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                 </div>
+            </div>
         </div>
     </div>
 

@@ -337,3 +337,102 @@ body.premium-dashboard {
   top: 0;
   left: 0;
 }
+
+/* Styles for Menu Item Card Actions */
+.menu-item-card .item-actions {
+    display: flex;
+    align-items: center;
+}
+
+.menu-item-card .rate-item-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.menu-item-card .rate-item-btn:hover {
+    background-color: #ffc107; /* Use gold color */
+    color: #343a40; /* Dark text */
+    border-color: #ffc107;
+}
+
+.menu-item-card .rate-item-btn .fa-star {
+    margin-right: 3px;
+}
+
+/* Styles for Rating Modal Stars */
+.star-rating {
+    font-size: 2rem; /* Adjust size as needed */
+    color: #ffc107; /* Gold color for stars */
+    cursor: pointer;
+}
+
+.star-rating i {
+    margin: 0 5px;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.star-rating i:hover {
+    transform: scale(1.2);
+}
+
+/* Classes for star states */
+.star-rating i.fas { /* Solid star (selected/hovered) */
+    font-family: 'Font Awesome 6 Free'; /* Ensure correct font */
+    font-weight: 900;
+}
+
+.star-rating i.far { /* Outline star (default) */
+    font-family: 'Font Awesome 6 Free'; /* Ensure correct font */
+    font-weight: 400;
+}
+
+/* Style for Rating Display on Card */
+.item-rating {
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.item-rating .fa-star {
+    margin-right: 4px;
+}
+
+#party-total-items {
+    font-weight: bold;
+} 
+
+/* Cart Offcanvas Schedule Section */
+.schedule-section {
+    background-color: #f8f9fa; /* Light background to separate it */
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1rem; /* Add space below before total */
+}
+
+.schedule-section .form-label {
+    margin-bottom: 0.5rem;
+}
+
+.schedule-section .form-control {
+    background-color: #fff; /* White background for input */
+}
+
+.schedule-section .form-text {
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+}
+
+/* Dish Detail Modal */
+#dishDetailNutrition .list-group-item {
+    padding-left: 0;
+    padding-right: 0;
+    border-color: #eee; /* Lighter border */
+}
+
+#dishDetailNutrition .list-group-item span:first-child {
+    color: #6c757d; /* Gray color for nutrition label */
+}
+
+#dishDetailNutrition .list-group-item span:last-child {
+    font-weight: 500;
+}

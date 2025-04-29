@@ -37,12 +37,15 @@ function renderOrderSummary(cart) {
         `;
     });
     
-    const tax = subtotal * 0.05;
-    const total = subtotal + tax;
+    const total = subtotal;
     
-    document.getElementById('orderSubtotal').textContent = `₹${subtotal.toFixed(2)}`;
-    document.getElementById('orderTax').textContent = `₹${tax.toFixed(2)}`;
-    document.getElementById('orderTotal').textContent = `₹${total.toFixed(2)}`;
+    // Get elements (ensure they exist)
+    const subtotalEl = document.getElementById('orderSubtotal');
+    const totalEl = document.getElementById('orderTotal');
+    
+    // Update DOM
+    if(subtotalEl) subtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
+    if(totalEl) totalEl.textContent = `₹${total.toFixed(2)}`;
 }
 
 // Set up payment method toggles

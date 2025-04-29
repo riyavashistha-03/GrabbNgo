@@ -212,39 +212,85 @@
       once: true
     });
 
-    // Function to fetch and update stats
-    async function updateStats() {
+    // Function to fetch and update dashboard summary stats
+    async function fetchDashboardSummary() {
+      const menuItemsCountEl = document.getElementById('menuItemsCount');
+      const todayOrdersEl = document.getElementById('todayOrders');
+      const activeUsersEl = document.getElementById('activeUsers');
+      const todayRevenueEl = document.getElementById('todayRevenue');
+      
+      // Set loading state (optional)
+      if(menuItemsCountEl) menuItemsCountEl.textContent = '...';
+      if(todayOrdersEl) todayOrdersEl.textContent = '...';
+      if(activeUsersEl) activeUsersEl.textContent = '...';
+      if(todayRevenueEl) todayRevenueEl.textContent = '...';
+      
       try {
-        const response = await fetch('../api/stats.php');
+        // --- Corrected Backend Endpoint --- 
+        const response = await fetch('http://localhost:5000/api/staff/stats', { // <--- Use /api/staff/stats
+             method: 'GET',
+             headers: {
+                 'Authorization': `Bearer ${localStorage.getItem('staffAuthToken')}`,
+                 'Content-Type': 'application/json'
+             }
+        }); 
+        
+        if (!response.ok) {
+             throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         
-        document.getElementById('menuItemsCount').textContent = data.menuItems || '0';
-        document.getElementById('todayOrders').textContent = data.todayOrders || '0';
-        document.getElementById('activeUsers').textContent = data.activeUsers || '0';
-        document.getElementById('todayRevenue').textContent = `$${data.todayRevenue || '0'}`;
+        // Update the DOM elements - Use 'menuItems' key from backend
+        if(menuItemsCountEl) menuItemsCountEl.textContent = data.menuItems !== undefined ? data.menuItems : 'N/A'; // <--- Use data.menuItems
+        if(todayOrdersEl) todayOrdersEl.textContent = data.todayOrders !== undefined ? data.todayOrders : 'N/A';
+        if(activeUsersEl) activeUsersEl.textContent = data.activeUsers !== undefined ? data.activeUsers : 'N/A';
+        if(todayRevenueEl) todayRevenueEl.textContent = data.todayRevenue !== undefined ? `₹${parseFloat(data.todayRevenue).toFixed(2)}` : 'N/A';
+        
       } catch (error) {
-        console.error('Error fetching stats:', error);
+        console.error('Error fetching dashboard summary:', error);
+        // Display error state (optional)
+        if(menuItemsCountEl) menuItemsCountEl.textContent = 'Err';
+        if(todayOrdersEl) todayOrdersEl.textContent = 'Err';
+        if(activeUsersEl) activeUsersEl.textContent = 'Err';
+        if(todayRevenueEl) todayRevenueEl.textContent = 'Err';
       }
     }
 
     // Function to fetch and update recent orders
     async function updateRecentOrders() {
       try {
-        const response = await fetch('../api/recent-orders.php');
+        // --- Corrected Backend Endpoint --- 
+        const response = await fetch('http://localhost:5000/api/staff/orders', { // <--- Use /api/staff/orders
+             method: 'GET', // Optional: GET is default
+             headers: { 
+                 'Authorization': `Bearer ${localStorage.getItem('staffAuthToken')}`
+             }
+        }); 
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const orders = await response.json();
         
         const ordersTable = document.querySelector('.orders-table tbody');
+        if(!ordersTable) return; // Exit if table not found
         ordersTable.innerHTML = ''; // Clear existing rows
+        
+        if (orders.length === 0) {
+             ordersTable.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No recent orders found.</td></tr>';
+             return;
+        }
         
         orders.forEach(order => {
           const row = document.createElement('tr');
+          // Adapt this based on actual data returned by /api/staff/orders
+          const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+          const customerName = order.user ? order.user.name : 'Guest'; // Handle potential null user
           row.innerHTML = `
-            <td>${order.order_id}</td>
-            <td>${order.customer_name}</td>
-            <td>${order.items_count}</td>
-            <td>$${order.total_amount}</td>
+            <td>${order.orderId || order._id}</td>
+            <td>${customerName}</td> 
+            <td>${itemCount}</td>
+            <td>₹${order.totalPrice.toFixed(2)}</td>
             <td><span class="badge ${getStatusBadgeClass(order.status)}">${order.status}</span></td>
-            <td><button class="btn btn-sm btn-outline-primary view-order-btn" data-order-id="${order.order_id}">View</button></td>
+            <td><button class="btn btn-sm btn-outline-primary view-order-btn" data-order-id="${order._id}">View</button></td>
           `;
           ordersTable.appendChild(row);
         });
@@ -253,34 +299,56 @@
         document.querySelectorAll('.view-order-btn').forEach(button => {
           button.addEventListener('click', (e) => {
             const orderId = e.target.dataset.orderId;
-            window.location.href = `order.html?order=${orderId}`;
+            // Decide where 'View' should go - e.g., a specific order detail page?
+            // window.location.href = `order-detail.html?order=${orderId}`; 
+            console.log("View order clicked:", orderId);
+            alert("Order detail view not implemented yet."); // Placeholder
           });
         });
       } catch (error) {
         console.error('Error fetching recent orders:', error);
+        const ordersTable = document.querySelector('.orders-table tbody');
+        if(ordersTable) ordersTable.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Could not load recent orders.</td></tr>'; 
       }
     }
 
     // Function to fetch and update popular dishes
     async function updatePopularDishes() {
       try {
-        const response = await fetch('../api/popular-dishes.php');
-        const dishes = await response.json();
+        // --- Corrected Backend Endpoint --- 
+        const response = await fetch('http://localhost:5000/api/staff/reports', { // <--- Use /api/staff/reports
+             method: 'GET',
+             headers: {
+                 'Authorization': `Bearer ${localStorage.getItem('staffAuthToken')}`
+             }
+        }); 
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const reportData = await response.json(); // Contains { ..., popularDishes: [...] }
+        
+        const dishes = reportData.popularDishes; // Extract the popular dishes array
         
         const dishesGrid = document.querySelector('.dishes-grid');
+        if(!dishesGrid) return;
         dishesGrid.innerHTML = ''; // Clear existing dishes
+        
+        if (!dishes || dishes.length === 0) {
+            dishesGrid.innerHTML = '<div class="col-12 text-center text-muted">No popular dish data found.</div>';
+            return;
+        }
         
         dishes.forEach(dish => {
           const col = document.createElement('div');
           col.className = 'col';
+          // Adjust image source if needed - reports might not return full image URLs
+          // const imageUrl = dish.imageUrl || '../images/dish-placeholder.jpg'; 
           col.innerHTML = `
             <div class="card h-100 dish-card" data-aos="fade-up">
-              <img src="${dish.image_url}" class="card-img-top" alt="${dish.name}" style="height: 180px; object-fit: cover;">
+              <!-- <img src="${imageUrl}" class="card-img-top" alt="${dish.name}" style="height: 180px; object-fit: cover;"> -->
               <div class="card-body">
-                <h5 class="card-title">${dish.name}</h5>
+                <h5 class="card-title">${dish.name || 'N/A'}</h5>
                 <div class="d-flex justify-content-between align-items-center">
-                  <span class="text-muted">$${dish.price}</span>
-                  <span class="badge bg-warning">${dish.order_count} orders</span>
+                  <!-- <span class="text-muted">...</span> --> 
+                  <span class="badge bg-warning">${dish.totalQuantity || 0} orders</span>
                 </div>
               </div>
             </div>
@@ -289,24 +357,24 @@
         });
       } catch (error) {
         console.error('Error fetching popular dishes:', error);
+         const dishesGrid = document.querySelector('.dishes-grid');
+         if(dishesGrid) dishesGrid.innerHTML = '<div class="col-12 text-center text-danger">Could not load popular dishes.</div>';
       }
     }
 
     // Function to check for new orders
     async function checkNewOrders() {
-      try {
-        const response = await fetch('../api/check-new-orders.php');
-        const data = await response.json();
-        
-        if (data.hasNewOrders) {
-          showNotification(`New order received! Order #${data.latestOrderId}`, "success");
-          updateNotificationBadge(data.newOrdersCount);
-          updateRecentOrders(); // Refresh the orders table
-          updateStats(); // Update the stats
-        }
-      } catch (error) {
-        console.error('Error checking for new orders:', error);
-      }
+      // --- This endpoint still needs backend implementation --- 
+      console.log("checkNewOrders function called, but backend endpoint `/api/staff/orders/check-new` is not yet implemented.");
+      // try {
+      //   const response = await fetch('http://localhost:5000/api/staff/orders/check-new'); 
+      //   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      //   const data = await response.json();
+      //   
+      //   if (data.hasNewOrders) { ... }
+      // } catch (error) {
+      //   console.error('Error checking for new orders:', error);
+      // }
     }
 
     // Dark/Light Mode Toggle
@@ -400,7 +468,7 @@
     });
 
     // Initial data load
-    updateStats();
+    fetchDashboardSummary();
     updateRecentOrders();
     updatePopularDishes();
 
