@@ -73,4 +73,37 @@ router.put('/:orderId/status', authMiddleware, async (req, res) => {
     }
 });
 
+router.get('/', authMiddleware, async (req, res) => {
+    try {
+        let orders;
+        if (req.user.userType === 'staff') {
+            orders = await Order.find().populate('user', 'name').populate('items.dish');
+        } else {
+            orders = await Order.find({ user: req.user.id }).populate('user', 'name').populate('items.dish');
+        }
+
+        // Filter out orders with null user to avoid errors
+        orders = orders.filter(order => order.user !== null);
+
+        // Format orders for frontend
+        const formattedOrders = orders.map(order => ({
+            id: order._id,
+            customerName: order.user.name,
+            items: order.items.map(item => ({
+                dishName: item.dish ? item.dish.name : 'Unknown Dish',
+                quantity: item.quantity,
+                price: item.dish ? item.dish.price : 0
+            })),
+            totalAmount: order.totalPrice,
+            status: order.status || 'pending',
+            date: order.createdAt
+        }));
+
+        res.json(formattedOrders);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 module.exports = router;

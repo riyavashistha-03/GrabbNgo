@@ -25,8 +25,8 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(express.json());
 
-// Serve static frontend files from GrabNgo/GrabNgo directory
-app.use(express.static(__dirname + '/../GrabNgo/GrabNgo'));
+// Serve static frontend files from GrabNgo directory
+app.use(express.static(__dirname + '/../GrabNgo'));
 
 // Serve static files from uploads directory for dish images
 app.use('/uploads', express.static(__dirname + '/uploads'));

@@ -1,210 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Staff Orders | GrabNGo</title>
-    <!-- Bootstrap 5 CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/staff.css" />
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management | GrabNGo</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="order.css">
 </head>
-<body class="staff-dashboard">
+<body class="dashboard-body">
+    <!-- Dashboard Wrapper -->
     <div class="dashboard-container">
-        <aside class="sidebar">
+        <!-- Premium Sidebar Navigation -->
+        <div class="dashboard-sidebar">
             <div class="sidebar-header">
-                <h2>GrabNGo</h2>
-                <p>Staff Dashboard</p>
+                <h2>Grab<span>N</span>Go</h2>
+                <p>Admin Dashboard</p>
             </div>
-            
-            <nav class="sidebar-nav">
-                <ul>
-                    <li>
-                        <a href="dashboard.html">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="add-dish.html">
-                            <i class="fas fa-utensils"></i>
-                            <span>Manage Menu</span>
-                        </a>
-                    </li>
-                    <li class="active">
-                        <a href="order.html">
-                            <i class="fas fa-clipboard-list"></i>
-                            <span>Orders</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="reports.html">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Reports</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="settings.html">
-                            <i class="fas fa-cog"></i>
-                            <span>Settings</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            
+
+            <div class="sidebar-menu">
+                <div class="menu-box">
+                    <a href="dashboard.html">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                        <div class="notification-bubble" id="dashboard-notification">0</div>
+                    </a>
+                </div>
+                
+                <div class="menu-box">
+                    <a href="reports.html">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Analytics</span>
+                    </a>
+                </div>
+                
+                <div class="menu-box">
+                    <a href="add-dish.html">
+                        <i class="fas fa-utensils"></i>
+                        <span>Manage Menu</span>
+                    </a>
+                </div>
+                
+                <div class="menu-box active">
+                    <a href="orders.html">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Order Management</span>
+                        <div class="notification-bubble" id="orders-notification">0</div>
+                    </a>
+                </div>
+                
+                <div class="menu-box">
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </div>
+            </div>
+
             <div class="sidebar-footer">
-                <a href="../index.html" class="btn btn-logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </aside>
-        
-        <main class="main-content">
-            <header class="content-header">
-                <div class="header-left">
-                    <h1>Manage Orders</h1>
+                <div class="menu-box logout">
+                    <a href="../index.html" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
                 </div>
-                <div class="header-right">
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge"></span>
-                    </div>
-                    <div class="user-profile">
-                        <img src="../images/staff-avatar.jpg" alt="Staff Avatar">
-                    </div>
-                </div>
-            </header>
-            
-            <div class="dashboard-content">
-                <table class="orders-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>User</th>
-                            <th>Items</th>
-                            <th>Status</th>
-                            <th>Update Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Dynamic order rows will be inserted here -->
-                    </tbody>
-                </table>
             </div>
-        </main>
-
-    <style>
-      /* Popup modal styles */
-      .status-popup-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,0.5);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-      }
-      .status-popup {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 300px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      }
-      .status-popup h3 {
-        margin-top: 0;
-        margin-bottom: 15px;
-        font-size: 1.2rem;
-      }
-      .status-popup select {
-        width: 100%;
-        padding: 8px;
-        font-size: 1rem;
-        margin-bottom: 15px;
-      }
-      .status-popup button {
-        padding: 8px 12px;
-        font-size: 1rem;
-        margin-right: 10px;
-        cursor: pointer;
-      }
-      .status-popup .btn-confirm {
-        background-color: #283618;
-        color: white;
-        border: none;
-        border-radius: 4px;
-      }
-      .status-popup .btn-cancel {
-        background-color: #ddd;
-        border: none;
-        border-radius: 4px;
-      }
-    </style>
-
-    <div class="status-popup-overlay" id="statusPopupOverlay">
-      <div class="status-popup">
-        <h3>Update Order Status</h3>
-        <select id="statusSelect">
-          <option value="Preparing">Preparing</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Ready">Ready</option>
-          <option value="Canceled">Canceled</option>
-        </select>
-        <div>
-          <button class="btn-confirm" id="btnConfirmStatus">Confirm</button>
-          <button class="btn-cancel" id="btnCancelStatus">Cancel</button>
         </div>
-      </div>
+
+        <!-- Main Content Area -->
+        <div class="dashboard-content">
+            <!-- Top Navigation Bar -->
+            <nav class="top-navbar">
+                <div class="nav-left">
+                    <button class="sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h3>Order Management</h3>
+                </div>
+                <div class="nav-right">
+                    <div class="user-profile">
+                        <img src="../images/delicious_img.jpg" alt="User" id="user-avatar">
+                        <span id="username-display">Loading...</span>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-header">
+                    <div class="header-title">
+                        <h4>Recent Orders</h4>
+                        <p id="orders-subtitle">Loading order data...</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="new-order-btn">
+                            <i class="fas fa-plus"></i> New Order
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Order Filters -->
+                <div class="order-filters">
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select class="form-select" id="status-filter">
+                            <option value="all">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Date Range:</label>
+                        <input type="date" class="form-control" id="date-filter">
+                    </div>
+                    <div class="filter-group">
+                        <button class="btn btn-filter" id="apply-filters">
+                            <i class="fas fa-filter"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Orders Table Container -->
+                <div class="orders-table-container">
+                    <div class="table-responsive">
+                        <table class="orders-table" id="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body">
+                                <!-- Orders will be loaded here dynamically -->
+                                <tr class="loading-row">
+                                    <td colspan="7">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                        Loading orders...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <nav aria-label="Orders pagination">
+                        <ul class="pagination" id="orders-pagination">
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </main>
+        </div>
     </div>
 
-    <script>
-      let currentRow = null;
-
-      function openStatusPopup(row) {
-        currentRow = row;
-        const currentStatusCell = row.querySelector('.current-status');
-        const statusSelect = document.getElementById('statusSelect');
-        statusSelect.value = currentStatusCell.textContent.trim();
-        document.getElementById('statusPopupOverlay').style.display = 'flex';
-      }
-
-      function closeStatusPopup() {
-        document.getElementById('statusPopupOverlay').style.display = 'none';
-        currentRow = null;
-      }
-
-      document.getElementById('btnCancelStatus').addEventListener('click', () => {
-        closeStatusPopup();
-      });
-
-      document.getElementById('btnConfirmStatus').addEventListener('click', () => {
-        if (!currentRow) return;
-        const statusSelect = document.getElementById('statusSelect');
-        const newStatus = statusSelect.value;
-        const currentStatusCell = currentRow.querySelector('.current-status');
-        currentStatusCell.textContent = newStatus;
-
-        // TODO: Add AJAX call to backend to update order status in database
-
-        closeStatusPopup();
-      });
-
-      // Use event delegation to handle clicks on update buttons, including dynamically added rows
-      document.querySelector('tbody').addEventListener('click', (event) => {
-        if (event.target.classList.contains('btn-update') || event.target.closest('.btn-update')) {
-          const button = event.target.classList.contains('btn-update') ? event.target : event.target.closest('.btn-update');
-          const row = button.closest('tr');
-          console.log('Opening status popup for row:', row);
-          openStatusPopup(row);
-        }
-      });
-    </script>
-    <!-- Bootstrap 5 JS Bundle CDN -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="../js/orders.js"></script>
 </body>
 </html>

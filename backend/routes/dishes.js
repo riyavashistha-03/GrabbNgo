@@ -17,8 +17,6 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-const path = require('path');
-
 // Get all dishes (menu)
 router.get('/', async (req, res) => {
     try {
