@@ -38,8 +38,11 @@
                 <!-- Profile Dropdown -->
                 <div class="dropdown ms-3">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" width="32" height="32" class="rounded-circle me-2 border border-gold" id="profileImage">
-                        <span class="d-none d-lg-inline" id="profileName">John D.</span>
+                        <img id="userProfileImg" src="" alt="Profile" class="profile-img">
+                        <div class="profile-initial"></div>
+                        <div class="profile-img-overlay">
+                        </div>
+                        <span class="d-none d-lg-inline" id="userName">Loading...</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end" aria-labelledby="dropdownUser1">
                         <li><a class="dropdown-item" href="#" id="profileEditBtn"><i class="fas fa-user-circle me-2"></i> Profile</a></li>
@@ -202,21 +205,22 @@
                     <p class="text-muted">Your cart is empty</p>
                 </div>
             </div>
-            <div class="cart-summary mt-auto">
-                <div class="d-flex justify-content-between mb-2">
+            <div class="cart-total mt-3 pt-3 border-top">
+                <div class="d-flex justify-content-between">
                     <span>Subtotal:</span>
                     <span id="cart-subtotal">₹0.00</span>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
+                <div class="d-flex justify-content-between">
                     <span>Tax (5%):</span>
                     <span id="cart-tax">₹0.00</span>
                 </div>
-                <div class="d-flex justify-content-between mb-3 fw-bold">
-                    <span>Total:</span>
-                    <span id="cart-total">₹0.00</span>
+                <hr>
+                <div class="d-flex justify-content-between fw-bold">
+                    <h5>Total:</h5>
+                    <h5><span id="cart-total">₹0.00</span></h5>
                 </div>
-                <button class="btn btn-gold w-100 py-2" id="checkout-button">Proceed to Checkout</button>
             </div>
+            <button class="btn btn-gold w-100 py-2" id="checkout-button">Proceed to Checkout</button>
         </div>
     </div>
 
