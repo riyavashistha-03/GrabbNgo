@@ -16,7 +16,7 @@
   <li>Bootstrap</li>
 
 <h2>Link to Project Report</h2>
-(https://github.com/riyavashistha-03/Riya_Vashisth_AIML5_GrabNGo/blob/main/Project_Report_GrabNGo.docx)
+(https://github.com/riyavashistha-03/Riya_Vashisth_AIML5_GrabNGo/blob/main/Project_Report_GrabNGo.pdf)
 
 <h2>Link To the Video Explaination:</h2>
 (https://drive.google.com/file/d/1CjD4HBNYEzHJUfZAeXEXk4duo4lRa5I5/view?usp=sharing)
