@@ -1,6 +1,7 @@
 // State
 let menuItems = [];
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let userData = null;
 
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -78,12 +79,21 @@ document.getElementById('profileEditForm').addEventListener('submit', async func
             }
 
             const photoData = await photoResponse.json();
-            document.getElementById('profileImage').src = photoData.profilePhoto.startsWith('http') ? photoData.profilePhoto : 'http://localhost:5000' + photoData.profilePhoto;
-            document.getElementById('profilePreview').src = document.getElementById('profileImage').src;
+            const profileImgElem = document.getElementById('userProfileImg'); 
+            if (profileImgElem) {
+                profileImgElem.src = photoData.profilePhoto.startsWith('http') ? photoData.profilePhoto : 'http://localhost:5000/' + photoData.profilePhoto;
+            }
+             const previewImgElem = document.getElementById('profilePreview');
+            if (previewImgElem) {
+                previewImgElem.src = document.getElementById('userProfileImg').src; 
+            }
         }
 
         // Update UI with new name
-        document.getElementById('profileName').textContent = newName;
+        const profileNameElem = document.getElementById('userName');
+        if (profileNameElem) {
+            profileNameElem.textContent = newName;
+        }
         profileEditModal.hide();
         showToast('Profile updated successfully!', 'success');
     } catch (error) {
@@ -159,32 +169,31 @@ function displayMenuItems(items) {
 
 const premiumBadge = item.isPremium ? '<div class="badge-premium">Chef\'s Pick</div>' : '';
 
-container.innerHTML += `
-    <div class="col" data-category="${item.category}" 
-         data-vegetarian="${item.vegetarian}" 
-         data-vegan="${item.vegan}" 
-         data-glutenfree="${item.glutenFree}"
-         data-popular="${item.isPopular}"
-         data-seasonal="${item.isSeasonal}">
-        <div class="card menu-item h-100 border-0 shadow-sm">
-            ${premiumBadge}
-            <img src="${item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:5000/' + item.imageUrl}" class="card-img-top" alt="${item.name}">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="card-title mb-0">${item.name}</h5>
-                    <span class="text-gold fw-bold">₹${item.price.toFixed(2)}</span>
-                </div>
-                <p class="card-text text-muted small">${item.description}</p>
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div>${badges.join('')}</div>
-                    <button class="btn btn-sm btn-gold rounded-pill px-3 add-to-cart" data-id="${item._id}">
-                        <i class="fas fa-plus me-1"></i> Add
-                    </button>
-                </div>
-            </div>
-        </div>
+const col = document.createElement('div');
+col.className = 'col-md-4 mb-4';
+// Use Bootstrap card structure
+col.innerHTML = `
+  <div class="card h-100">
+    <img src="${item.image || '../images/default-profile.png'}" class="card-img-top" alt="${item.name}">
+    <div class="card-body d-flex flex-column">
+      <h5 class="card-title">${item.name}</h5>
+      <p class="card-text">${item.description || ''}</p>
+      <div class="mt-auto d-flex justify-content-between align-items-center">
+        <span class="badge bg-primary">₹${item.price}</span>
+        <button class="btn btn-success btn-sm add-to-cart-btn" data-id="${item._id}">Add to Cart</button>
+      </div>
     </div>
+  </div>
 `;
+// Find the button WITHIN the newly created element
+const addToCartButton = col.querySelector('.add-to-cart-btn');
+if (addToCartButton) {
+    addToCartButton.addEventListener('click', () => {
+        console.log('Add to Cart clicked for item:', item);
+        addToCart(item); // Pass the item object
+    });
+}
+container.appendChild(col);
     });
 }
 
@@ -367,23 +376,21 @@ function resetFilters() {
 }
 
 // Add item to cart
-function addToCart(itemId) {
-    const item = menuItems.find(i => i.id == itemId);
-    if (!item) return;
-
-    const existingItem = cart.find(i => i.id == itemId);
+function addToCart(item) {
+    // Find using _id
+    const existingItem = cart.find(i => i._id === item._id);
     if (existingItem) {
-        existingItem.quantity += 1;
+      existingItem.quantity += 1;
     } else {
+        // Push using _id
         cart.push({ 
-            id: item.id,
+            _id: item._id, // Store _id
             name: item.name,
             price: item.price,
             imageUrl: item.imageUrl,
             quantity: 1 
         });
     }
-
     updateCart();
     showAddToCartConfirmation(item.name);
 }
@@ -405,7 +412,11 @@ function updateCartCount() {
 
 // Render cart items
 function renderCartItems() {
-    const container = document.getElementById('cart-items-container');
+    const container = document.getElementById('cart-items-container'); // Target ID
+    if (!container) {
+        console.error('Cart items container not found!');
+        return; // Exit if container missing
+    }
     container.innerHTML = '';
 
     if (cart.length === 0) {
@@ -420,17 +431,19 @@ function renderCartItems() {
     }
 
     cart.forEach(item => {
+        // Ensure imageUrl is handled correctly (relative/absolute)
+        const imageUrl = item.imageUrl ? (item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:5000/${item.imageUrl.replace(/\\/g, '/')}`) : '../images/default-profile.png';
         container.innerHTML += `
             <div class="cart-item">
-                <img src="${item.imageUrl.startsWith('http') ? item.imageUrl : 'http://localhost:5000/' + item.imageUrl}" alt="${item.name}">
+                <img src="${imageUrl}" alt="${item.name}">
                 <div class="cart-item-details">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">₹${(item.price * item.quantity).toFixed(2)}</div>
                     <div class="quantity-control mt-2">
-                        <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                        <button class="quantity-btn" data-id="${item._id}" data-action="decrease">-</button> <!-- Use _id -->
                         <span class="quantity-value">${item.quantity}</span>
-                        <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
-                        <button class="remove-item ms-3" data-id="${item.id}" title="Remove item">
+                        <button class="quantity-btn" data-id="${item._id}" data-action="increase">+</button> <!-- Use _id -->
+                        <button class="remove-item ms-3" data-id="${item._id}" title="Remove item"> <!-- Use _id -->
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -440,7 +453,7 @@ function renderCartItems() {
     });
 
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const tax = subtotal * 0.05;
+    const tax = subtotal * 0.05; // Assuming 5% tax
     const total = subtotal + tax;
 
     updateCartSummary(subtotal, tax, total);
@@ -448,14 +461,19 @@ function renderCartItems() {
 
 // Update cart summary
 function updateCartSummary(subtotal, tax, total) {
-    document.getElementById('cart-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
-    document.getElementById('cart-tax').textContent = `₹${tax.toFixed(2)}`;
-    document.getElementById('cart-total').textContent = `₹${total.toFixed(2)}`;
+    // Ensure these elements exist
+    const subtotalEl = document.getElementById('cart-subtotal');
+    const taxEl = document.getElementById('cart-tax');
+    const totalEl = document.getElementById('cart-total');
+    
+    if (subtotalEl) subtotalEl.textContent = `₹${subtotal.toFixed(2)}`;
+    if (taxEl) taxEl.textContent = `₹${tax.toFixed(2)}`;
+    if (totalEl) totalEl.textContent = `₹${total.toFixed(2)}`;
 }
 
 // Update cart item quantity
-function updateCartItemQuantity(itemId, action) {
-    const item = cart.find(i => i.id == itemId);
+function updateCartItemQuantity(itemId, action) { // itemId here is _id
+    const item = cart.find(i => i._id === itemId); // Find using _id
     if (!item) return;
 
     if (action === 'increase') {
@@ -468,8 +486,8 @@ function updateCartItemQuantity(itemId, action) {
 }
 
 // Remove item from cart
-function removeCartItem(itemId) {
-    cart = cart.filter(i => i.id != itemId);
+function removeCartItem(itemId) { // itemId here is _id
+    cart = cart.filter(i => i._id !== itemId); // Filter using _id
     updateCart();
 }
 
@@ -532,35 +550,38 @@ function createToastContainer() {
 
 // Load profile from backend API
 async function loadProfile() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        console.error('No auth token found, cannot load profile.');
+        showToast('Please log in to view profile.', 'error');
+        userData = null; // Explicitly set userData to null
+        updateProfileDisplay(); 
+        return;
+    }
+
     try {
         const response = await fetch('http://localhost:5000/api/user/profile', {
             method: 'GET',
-            credentials: 'include',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` 
             }
         });
+        
         if (!response.ok) {
+            console.error(`Error fetching profile: ${response.status} (${response.statusText})`); 
             throw new Error('Failed to fetch profile');
         }
+        
         const user = await response.json();
-        const profileNameElem = document.getElementById('profileName');
-        const profileNameInput = document.getElementById('profileNameInput');
-        const profileImage = document.getElementById('profileImage');
-        const profilePreview = document.getElementById('profilePreview');
+        userData = user; // Update the global userData variable
+        updateProfileDisplay(); // Update UI with fetched data
 
-        if (user.name) {
-            profileNameElem.textContent = user.name;
-            profileNameInput.value = user.name;
-        }
-        if (user.profilePhoto) {
-            const photoUrl = user.profilePhoto.startsWith('http') ? user.profilePhoto : 'http://localhost:5000' + user.profilePhoto;
-            profileImage.src = photoUrl;
-            profilePreview.src = photoUrl;
-        }
     } catch (error) {
         console.error('Error loading profile:', error);
         showToast('Failed to load profile', 'error');
+        userData = null; // Ensure userData is null on error
+        updateProfileDisplay(); // Update UI to show default state on error
     }
 }
 
@@ -578,3 +599,54 @@ function updateTime() {
         dateElem.textContent = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
     }
 }
+
+function updateProfileDisplay() {
+    // Get elements regardless of userData status
+    const profileInitialDiv = document.querySelector('.profile-initial'); 
+    const userNameElement = document.getElementById('userName');
+    const userProfileImgElement = document.getElementById('userProfileImg');
+    const previewProfileImgElement = document.getElementById('profilePreview'); 
+
+    // Add checks to ensure elements exist before modifying
+    if (!userNameElement || !userProfileImgElement) {
+        console.error('Profile display elements not found in DOM!');
+        return; 
+    }
+
+    if (userData && userData.fullName) {
+      // User data loaded successfully
+      userNameElement.textContent = userData.fullName;
+      if (userData.profilePhoto) {
+        // Construct full URL for profile photo
+        const photoUrl = userData.profilePhoto.startsWith('http') ? userData.profilePhoto : `http://localhost:5000/${userData.profilePhoto.replace(/\\/g, '/')}`;
+        userProfileImgElement.src = photoUrl;
+        userProfileImgElement.style.display = 'block';
+        if (profileInitialDiv) profileInitialDiv.style.display = 'none';
+      } else {
+        // Show initial if no photo
+        userProfileImgElement.style.display = 'none';
+        if (profileInitialDiv) {
+          const initial = userData.fullName.charAt(0).toUpperCase();
+          profileInitialDiv.textContent = initial;
+          profileInitialDiv.style.display = 'flex';
+        }
+      }
+      // Update modal preview image
+      if (previewProfileImgElement) {
+         const previewUrl = userData.profilePhoto ? userProfileImgElement.src : '../images/default-profile.png';
+         previewProfileImgElement.src = previewUrl;
+      }
+    } else {
+      // Fetch failed or no user data - Show defaults
+      userNameElement.textContent = 'User'; // Default name
+      userProfileImgElement.style.display = 'none'; // Hide image
+      if (profileInitialDiv) {
+        profileInitialDiv.textContent = 'U'; // Default initial
+        profileInitialDiv.style.display = 'flex';
+      }
+      // Set default modal preview image
+       if (previewProfileImgElement) {
+         previewProfileImgElement.src = '../images/default-profile.png';
+      }
+    }
+  }

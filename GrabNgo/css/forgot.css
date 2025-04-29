@@ -1,196 +1,209 @@
-/* CSS for GrabNgo/forgot.html */
-
+/* Luxury Forgot Password Styles */
 :root {
-  --color-dark-green: #283618;
-  --color-green: #606C38;
-  --color-light: #FEFAE0;
-  --color-gold: #DDA15E;
-  --color-orange: #BC6C25;
-  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --color-dark: #121212;
+  --color-dark-2: #1e1e1e;
+  --color-gold: #D4AF37;
+  --color-gold-light: rgba(212, 175, 55, 0.1);
+  --color-white: #ffffff;
+  --color-light: #f8f9fa;
+  --color-gray: #6c757d;
+  --color-gray-light: #e9ecef;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.2);
+  --transition: all 0.3s ease;
 }
 
-body.vintage-auth {
-  font-family: var(--font-family);
-  background-color: var(--color-light);
-  color: var(--color-dark-green);
-  margin: 0;
+body.luxury-auth {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--color-dark);
+  color: var(--color-white);
   min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 0;
+  margin: 0;
 }
 
 .auth-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  max-width: 900px;
-  width: 100%;
-  background-color: var(--color-green);
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
   border-radius: 15px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-branding {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.9), rgba(30, 30, 30, 0.7)), 
+              url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center;
+  background-size: cover;
+  padding: 5rem;
+  position: relative;
+}
+
+.branding-content {
+  position: relative;
+  z-index: 2;
+  max-width: 500px;
+}
+
+.text-gold {
+  color: var(--color-gold);
+}
+
+.auth-form-wrapper {
+  background-color: var(--color-white);
+  padding: 5rem;
+}
+
+.form-container {
+  max-width: 450px;
+  width: 100%;
+}
+
+.form-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: var(--color-dark);
+}
+
+.luxury-input {
+  background-color: var(--color-light);
+  border: 1px solid var(--color-gray-light);
+  border-radius: 8px !important;
+  padding-left: 3rem !important;
+  height: calc(3.5rem + 2px);
+  transition: var(--transition);
+}
+
+.luxury-input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 0.25rem var(--color-gold-light);
+}
+
+.luxury-select {
+  background-color: var(--color-light);
+  border: 1px solid var(--color-gray-light);
+  border-radius: 8px !important;
+  padding: 1rem;
+  transition: var(--transition);
+}
+
+.luxury-select:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 0.25rem var(--color-gold-light);
+}
+
+.form-floating label {
+  padding-left: 3rem !important;
+  color: var(--color-gray);
+}
+
+.form-floating>.form-control:focus~label, 
+.form-floating>.form-control:not(:placeholder-shown)~label {
+  color: var(--color-gold);
+}
+
+.btn-luxury {
+  background-color: var(--color-gold);
+  color: var(--color-dark);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border: none;
+  transition: var(--transition);
+  position: relative;
   overflow: hidden;
 }
 
-.auth-left {
-  position: relative;
-  background-color: var(--color-dark-green);
-  color: var(--color-light);
-  padding: 3rem 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.vintage-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(96,108,56,0.7);
-  z-index: 0;
-}
-
-.auth-left-content {
-  position: relative;
-  z-index: 1;
-}
-
-.auth-left h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-
-.auth-left p {
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-}
-
-.auth-decoration {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.decoration-line {
-  flex-grow: 1;
-  height: 2px;
+.btn-luxury:hover {
   background-color: var(--color-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 }
 
-.auth-decoration i {
-  font-size: 2rem;
-  color: var(--color-gold);
+.btn-luxury::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: var(--transition);
 }
 
-.auth-left a {
+.btn-luxury:hover::after {
+  left: 100%;
+}
+
+.highlight {
   color: var(--color-gold);
-  font-weight: 600;
+  transition: var(--transition);
+  position: relative;
   text-decoration: none;
-  transition: color 0.3s ease;
 }
 
-.auth-left a:hover {
-  color: var(--color-orange);
-}
-
-.auth-right {
-  background-color: var(--color-light);
-  padding: 3rem 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border-radius: 0 15px 15px 0;
-}
-
-.auth-header h2 {
-  margin: 0 0 0.5rem 0;
-  color: var(--color-dark-green);
-}
-
-.auth-header p {
-  margin: 0 0 2rem 0;
-  color: var(--color-green);
-  font-weight: 600;
-}
-
-.auth-form .form-group {
-  margin-bottom: 1.5rem;
-}
-
-.auth-form label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: var(--color-dark-green);
-}
-
-.input-with-icon {
-  position: relative;
-}
-
-.input-with-icon i {
-  position: absolute;
-  top: 50%;
-  left: 0.75rem;
-  transform: translateY(-50%);
+.highlight:hover {
   color: var(--color-gold);
 }
 
-.input-with-icon input,
-.vintage-select {
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
   width: 100%;
-  padding: 0.5rem 0.75rem 0.5rem 2.5rem;
-  border: 2px solid var(--color-green);
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-dark-green);
-  background-color: var(--color-light);
-  transition: border-color 0.3s ease;
-}
-
-.input-with-icon input:focus,
-.vintage-select:focus {
-  outline: none;
-  border-color: var(--color-orange);
-}
-
-.vintage-btn {
+  height: 1px;
   background-color: var(--color-gold);
-  color: var(--color-dark-green);
-  border: none;
-  padding: 0.75rem;
-  border-radius: 30px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 100%;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
 }
 
-.vintage-btn:hover {
-  background-color: var(--color-orange);
-  color: var(--color-light);
+.highlight:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.divider .line {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+  width: 100px;
+}
+
+.divider i {
+  color: var(--color-gold);
+  font-size: 1.2rem;
 }
 
 .recovery-message p {
-  color: var(--color-green);
-  font-weight: 600;
-  margin-top: 1rem;
+  color: var(--color-gray);
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .auth-branding, .auth-form-wrapper {
+    padding: 3rem;
+  }
 }
 
 @media (max-width: 768px) {
   .auth-container {
-    grid-template-columns: 1fr;
-    border-radius: 15px;
+    border-radius: 0;
   }
-  .auth-left {
-    border-radius: 15px 15px 0 0;
+  
+  .auth-branding {
+    padding: 3rem 2rem;
+    border-radius: 0;
   }
-  .auth-right {
-    border-radius: 0 0 15px 15px;
+  
+  .auth-form-wrapper {
+    padding: 3rem 2rem;
+    border-radius: 0;
+  }
+  
+  .branding-content h1 {
+    font-size: 2.5rem;
   }
 }

@@ -4,6 +4,7 @@ const Dish = require('../models/Dish');
 const authMiddleware = require('../middleware/auth');
 const multer = require('multer');
 const path = require('path');
+const mongoose = require('mongoose');
 
 // Multer setup for file uploads
 const storage = multer.diskStorage({
@@ -16,8 +17,6 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage: storage });
-
-const path = require('path');
 
 // Get all dishes (menu)
 router.get('/', async (req, res) => {
@@ -43,8 +42,6 @@ router.get('/', async (req, res) => {
 });
 
 // Get dish by ID
-const mongoose = require('mongoose');
-
 router.get('/:id', async (req, res) => {
     try {
         const dishId = req.params.id;
