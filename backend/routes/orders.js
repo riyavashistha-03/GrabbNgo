@@ -3,6 +3,7 @@ const router = express.Router();
 const Order = require('../models/Order');
 const Dish = require('../models/Dish');
 const authMiddleware = require('../middleware/auth');
+const staffAuth = require('../middleware/staffAuth');
 
 // Place a new order
 router.post('/', authMiddleware, async (req, res) => {
@@ -43,21 +44,19 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Update order status
-router.put('/:orderId/status', authMiddleware, async (req, res) => {
-    if (req.user.userType !== 'staff') {
-        return res.status(403).json({ message: 'Forbidden: Staff only' });
-    }
-
+// Update order status (Staff only)
+router.put('/:orderId/status', staffAuth, async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
 
-    if (!status) {
-        return res.status(400).json({ message: 'Status is required' });
+    // Optional: Add validation for allowed status values
+    const allowedStatuses = ['Pending', 'Preparing', 'Ready', 'Out for Delivery', 'Delivered', 'Cancelled'];
+    if (!status || !allowedStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid or missing status' });
     }
 
     try {
-        console.log(`Updating order ${orderId} status to ${status}`);
+        console.log(`Staff member ${req.user.id} updating order ${orderId} status to ${status}`);
         const order = await Order.findById(orderId);
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
@@ -66,7 +65,7 @@ router.put('/:orderId/status', authMiddleware, async (req, res) => {
         order.status = status;
         await order.save();
 
-        res.json({ message: 'Order status updated successfully' });
+        res.json({ message: 'Order status updated successfully', order });
     } catch (error) {
         console.error('Error updating order status:', error);
         res.status(500).json({ message: 'Server error', error: error.message });

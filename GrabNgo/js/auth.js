@@ -75,21 +75,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 const data = await response.json();
-                // Store token or session info as needed
-                localStorage.setItem('authToken', data.token);
+
+                // Clear previous auth data
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('staffAuthToken');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('staffName');
+                localStorage.removeItem('userType');
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('rememberMe');
+
+
+                // Store token or session info based on user type
                 localStorage.setItem('userType', userType);
                 localStorage.setItem('isLoggedIn', 'true');
+
+                if (userType === 'staff') {
+                    localStorage.setItem('staffAuthToken', data.token);
+                    if (data.name) { // Check if name is returned
+                        localStorage.setItem('staffName', data.name);
+                    }
+                    window.location.href = 'staff/dashboard.html';
+                } else {
+                    localStorage.setItem('authToken', data.token);
+                     if (data.name) { // Check if name is returned
+                        localStorage.setItem('userName', data.name);
+                    }
+                    window.location.href = 'user/menu.html';
+                }
                 
                 if (remember) {
                     localStorage.setItem('rememberMe', 'true');
-                } else {
-                    localStorage.removeItem('rememberMe');
-                }
-                
-                if (userType === 'staff') {
-                    window.location.href = 'staff/dashboard.html';
-                } else {
-                    window.location.href = 'user/menu.html';
                 }
             } catch (error) {
                 alert('Login error: ' + error.message);

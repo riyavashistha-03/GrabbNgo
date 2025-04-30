@@ -320,7 +320,10 @@ section h3 {
   }
   
   .sidebar-footer {
-    display: none;
+    margin-left: auto;
+    padding: 0 0.5rem;
+    border: none;
+    align-self: center;
   }
   
   .quick-actions {
